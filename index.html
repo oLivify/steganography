@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SteganoCrypt Studio v3.0 | Multi-Layer LSB Steganography & Game-Gated Vault</title>
+    <title>SteganoCrypt Studio v4.0 | Image & Text Steganography + Game-Gated Vault</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -27,7 +27,8 @@
                             neonCyan: '#06b6d4',
                             neonPurple: '#a855f7',
                             neonGreen: '#10b981',
-                            neonAmber: '#f59e0b'
+                            neonAmber: '#f59e0b',
+                            neonPink: '#ec4899'
                         }
                     },
                     fontFamily: {
@@ -45,8 +46,9 @@
             background-color: #07090e;
             color: #f3f4f6;
             background-image: 
-                radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
-                radial-gradient(circle at 85% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 45%);
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
         }
 
@@ -57,17 +59,9 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .glow-cyan {
-            box-shadow: 0 0 20px -3px rgba(6, 182, 212, 0.3);
-        }
-
-        .glow-purple {
-            box-shadow: 0 0 20px -3px rgba(168, 85, 247, 0.35);
-        }
-
-        .glow-indigo {
-            box-shadow: 0 0 20px -3px rgba(99, 102, 241, 0.35);
-        }
+        .glow-cyan { box-shadow: 0 0 20px -3px rgba(6, 182, 212, 0.35); }
+        .glow-purple { box-shadow: 0 0 20px -3px rgba(168, 85, 247, 0.35); }
+        .glow-pink { box-shadow: 0 0 20px -3px rgba(236, 72, 153, 0.35); }
 
         .simon-btn {
             transition: all 0.15s ease;
@@ -79,11 +73,10 @@
         }
 
         .simon-active {
-            filter: brightness(2.0) contrast(1.3);
+            filter: brightness(2.2) contrast(1.4);
             box-shadow: 0 0 30px currentColor;
         }
 
-        /* Custom scrollbars */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -111,304 +104,524 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-cyber-neonCyan bg-clip-text text-transparent flex items-center gap-2">
-                        SteganoCrypt <span class="text-xs px-2 py-0.5 rounded-full bg-cyber-500/20 text-cyber-400 border border-cyber-500/30">Studio v3.0</span>
+                        SteganoCrypt <span class="text-xs px-2 py-0.5 rounded-full bg-cyber-500/20 text-cyber-400 border border-cyber-500/30">Studio v4.0</span>
                     </h1>
-                    <p class="text-xs text-slate-400 hidden sm:block">LSB Steganography & Multi-Cipher Game-Gated Encrypted Vault</p>
+                    <p class="text-xs text-slate-400 hidden sm:block">Image LSB & Zero-Width Text Steganography with Game Vault</p>
                 </div>
             </div>
 
-            <!-- Mode Switcher Tabs -->
-            <div class="flex p-1 bg-slate-900/80 rounded-xl border border-slate-800">
-                <button id="tab-encode" onclick="switchTab('encode')" class="flex items-center gap-2 px-3 sm:px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-cyber-600 text-white shadow">
-                    <i data-lucide="lock" class="w-4 h-4"></i>
-                    <span>Encode & Lock</span>
+            <!-- Primary Mode Tabs (Image Steganography vs Text Steganography) -->
+            <div class="flex p-1 bg-slate-900/90 rounded-xl border border-slate-800">
+                <button id="mode-image-btn" onclick="switchPrimaryMode('image')" class="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-cyber-600 text-white shadow">
+                    <i data-lucide="image" class="w-4 h-4"></i>
+                    <span>Image Steganography</span>
                 </button>
-                <button id="tab-decode" onclick="switchTab('decode')" class="flex items-center gap-2 px-3 sm:px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all duration-200">
-                    <i data-lucide="unlock" class="w-4 h-4"></i>
-                    <span>Decode & Unlock</span>
+                <button id="mode-text-btn" onclick="switchPrimaryMode('text')" class="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white transition-all duration-200">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <span>Text Steganography</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Container -->
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+
+    <!-- Main Workspace -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
 
-        <!-- Notification Toast Container -->
-        <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+        <!-- =================================================================== -->
+        <!-- SECTION 1: IMAGE STEGANOGRAPHY WORKSPACE -->
+        <!-- =================================================================== -->
+        <div id="workspace-image" class="flex flex-col gap-6">
+            
+            <!-- Secondary Navigation: Encode vs Decode -->
+            <div class="flex justify-center">
+                <div class="flex p-1 bg-slate-900/80 rounded-xl border border-slate-800">
+                    <button id="img-tab-encode" onclick="switchImageTab('encode')" class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-600 text-white shadow">
+                        <i data-lucide="lock" class="w-4 h-4"></i>
+                        <span>Encode Image</span>
+                    </button>
+                    <button id="img-tab-decode" onclick="switchImageTab('decode')" class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white">
+                        <i data-lucide="unlock" class="w-4 h-4"></i>
+                        <span>Decode Image</span>
+                    </button>
+                </div>
+            </div>
 
-        <!-- =================================================================== -->
-        <!-- PANEL 1: ENCODE & LOCK MESSAGE -->
-        <!-- =================================================================== -->
-        <section id="panel-encode" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Controls & Form -->
-            <div class="lg:col-span-7 flex flex-col gap-6">
-                <!-- Step 1: Carrier Image Upload -->
-                <div class="glass-panel p-5 rounded-2xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full bg-cyber-500/20 text-cyber-400 flex items-center justify-center text-xs font-bold border border-cyber-500/30">1</span>
-                            <h2 class="text-base font-semibold text-white">Select Carrier Image</h2>
+            <!-- Image Encode Panel -->
+            <div id="img-panel-encode" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-7 flex flex-col gap-6">
+                    <!-- Step 1: Image Upload -->
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-cyber-500/20 text-cyber-400 flex items-center justify-center text-xs font-bold border border-cyber-500/30">1</span>
+                                <h2 class="text-base font-semibold text-white">Select Carrier Image</h2>
+                            </div>
+                            <span id="encode-img-info" class="text-xs text-slate-400 font-mono">No image loaded</span>
                         </div>
-                        <span id="encode-img-info" class="text-xs text-slate-400 font-mono">No image loaded</span>
+                        <div id="encode-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyber-500 transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-slate-900/40">
+                            <input type="file" id="encode-file-input" accept="image/png, image/jpeg, image/webp, image/bmp" class="hidden">
+                            <div class="p-3 bg-slate-800/80 rounded-full text-cyber-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i data-lucide="image-plus" class="w-8 h-8"></i>
+                            </div>
+                            <p class="text-sm font-medium text-slate-200">Click to upload or drag & drop</p>
+                            <p class="text-xs text-slate-400 mt-1">PNG, JPEG, WEBP or BMP (Lossless PNG recommended)</p>
+                        </div>
                     </div>
 
-                    <div id="encode-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyber-500 transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-slate-900/40">
-                        <input type="file" id="encode-file-input" accept="image/png, image/jpeg, image/webp, image/bmp" class="hidden">
-                        <div class="p-3 bg-slate-800/80 rounded-full text-cyber-400 mb-3 group-hover:scale-110 transition-transform">
-                            <i data-lucide="image-plus" class="w-8 h-8"></i>
+                    <!-- Step 2: Secret Payload & Encryption -->
+                    <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-cyber-500/20 text-cyber-400 flex items-center justify-center text-xs font-bold border border-cyber-500/30">2</span>
+                                <h2 class="text-base font-semibold text-white">Payload & Multi-Cipher Security</h2>
+                            </div>
+                            <div id="capacity-container" class="hidden items-center gap-2">
+                                <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                                    <div id="capacity-bar" class="bg-cyber-neonCyan h-full w-0 transition-all duration-300"></div>
+                                </div>
+                                <span id="capacity-text" class="text-xs font-mono text-slate-400">0 / 0 bytes</span>
+                            </div>
                         </div>
-                        <p class="text-sm font-medium text-slate-200">Click to upload or drag & drop</p>
-                        <p class="text-xs text-slate-400 mt-1">PNG, JPEG, WEBP or BMP (Lossless PNG highly recommended)</p>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Secret Payload</label>
+                            <textarea id="encode-message" rows="4" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-500 font-mono resize-none" placeholder="Enter secret message to hide inside image pixels..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Encryption Cipher</label>
+                                <select id="encode-cipher-type" onchange="toggleCipherKeyInput('encode')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyber-500">
+                                    <option value="NONE">None / Plaintext</option>
+                                    <option value="XOR">XOR Cipher</option>
+                                    <option value="VIGENERE" selected>Vigenère Cipher</option>
+                                    <option value="AES-GCM">AES-GCM 256-bit (PBKDF2)</option>
+                                </select>
+                            </div>
+                            <div id="encode-key-wrapper">
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase / Key</label>
+                                <div class="relative">
+                                    <input type="password" id="encode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyber-500 font-mono" placeholder="Encryption key">
+                                    <button type="button" onclick="togglePasswordVisibility('encode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Game Lock Option -->
+                        <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple"></i>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-white">Require Memory Game Challenge</h3>
+                                        <p class="text-xs text-slate-400">Lock payload until receiver beats required Simon game rounds</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="encode-game-lock-toggle" onchange="toggleGameLockOption('encode')" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyber-neonPurple"></div>
+                                </label>
+                            </div>
+
+                            <div id="encode-game-rounds-wrapper" class="hidden grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">Required Game Rounds</label>
+                                    <input type="number" id="encode-game-rounds" min="1" max="20" value="5" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyber-neonPurple">
+                                </div>
+                                <div class="flex items-center text-xs text-slate-400 pt-4">
+                                    <i data-lucide="info" class="w-4 h-4 text-cyber-neonPurple inline shrink-0 mr-1.5"></i>
+                                    Round requirement is embedded directly into binary header metadata.
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="btn-encode-process" onclick="processImageEncode()" disabled class="w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyber-600 via-cyber-neonPurple to-cyber-neonCyan hover:brightness-110 text-white shadow-lg shadow-cyber-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="cpu" class="w-4 h-4"></i>
+                            <span>Embed & Generate Stego Image</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Step 2: Secret Payload & Security Configuration -->
-                <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full bg-cyber-500/20 text-cyber-400 flex items-center justify-center text-xs font-bold border border-cyber-500/30">2</span>
-                            <h2 class="text-base font-semibold text-white">Secret Payload & Multi-Layer Security</h2>
+                <!-- Preview & Result Output -->
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    <div class="glass-panel p-5 rounded-2xl flex flex-col items-center justify-center min-h-[260px] relative overflow-hidden">
+                        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 w-full flex justify-between items-center">
+                            <span>Carrier Image Preview</span>
+                            <span id="encode-resolution-badge" class="normal-case text-slate-500 font-mono"></span>
+                        </h3>
+                        <div id="encode-preview-placeholder" class="text-center text-slate-600 py-12">
+                            <i data-lucide="file-image" class="w-16 h-16 mx-auto mb-2 opacity-40"></i>
+                            <p class="text-xs">No image loaded yet</p>
                         </div>
-                        <!-- Payload Capacity Tracker -->
-                        <div id="capacity-container" class="hidden items-center gap-2">
-                            <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
-                                <div id="capacity-bar" class="bg-cyber-neonCyan h-full w-0 transition-all duration-300"></div>
+                        <img id="encode-preview-img" class="hidden max-h-[280px] w-auto rounded-lg object-contain shadow-md" alt="Carrier preview">
+                    </div>
+
+                    <div id="encode-result-box" class="glass-panel p-5 rounded-2xl hidden border-cyber-500/40 glow-indigo">
+                        <div class="flex items-center gap-2 mb-2 text-emerald-400">
+                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                            <h3 class="font-bold text-sm text-white">Stego-Image Generated!</h3>
+                        </div>
+                        <p class="text-xs text-slate-300 mb-4">Payload concealed inside pixel LSB layers.</p>
+
+                        <div class="bg-slate-950 p-3 rounded-xl mb-4 border border-slate-800 flex flex-col items-center">
+                            <span class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-wider">Stego Output Image Canvas</span>
+                            <canvas id="encode-output-canvas" class="max-h-[180px] max-w-full rounded border border-slate-800"></canvas>
+                        </div>
+
+                        <a id="download-stego-btn" download="stego-vault.png" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Download Lossless PNG</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Decode Panel -->
+            <div id="img-panel-decode" class="grid grid-cols-1 lg:grid-cols-12 gap-6 hidden">
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="w-6 h-6 rounded-full bg-cyber-neonCyan/20 text-cyber-neonCyan flex items-center justify-center text-xs font-bold border border-cyber-neonCyan/30">1</span>
+                            <h2 class="text-base font-semibold text-white">Upload Stego Image</h2>
+                        </div>
+                        <div id="decode-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyber-neonCyan transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-slate-900/40">
+                            <input type="file" id="decode-file-input" accept="image/png, image/bmp, image/webp" class="hidden">
+                            <div class="p-3 bg-slate-800/80 rounded-full text-cyber-neonCyan mb-3 group-hover:scale-110 transition-transform">
+                                <i data-lucide="file-search" class="w-8 h-8"></i>
                             </div>
-                            <span id="capacity-text" class="text-xs font-mono text-slate-400">0 / 0 bytes</span>
+                            <p class="text-sm font-medium text-slate-200">Upload Stego Image File</p>
+                            <p class="text-xs text-slate-400 mt-1">Must be lossless PNG/BMP containing header</p>
                         </div>
                     </div>
 
-                    <!-- Secret Message Area -->
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Secret Message</label>
-                        <textarea id="encode-message" rows="4" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-500 transition-colors font-mono resize-none" placeholder="Enter your confidential secret payload here..."></textarea>
-                    </div>
-
-                    <!-- Cipher Selection & Passphrase -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1">Encryption Cipher</label>
-                            <select id="encode-cipher-type" onchange="toggleCipherKeyInput('encode')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyber-500">
-                                <option value="NONE">None / Plaintext</option>
-                                <option value="XOR">XOR Cipher (Key Byte Mask)</option>
-                                <option value="VIGENERE" selected>Vigenère Cipher (Alpha Shift)</option>
-                                <option value="AES-GCM">AES-GCM 256-bit (PBKDF2 Salt + IV)</option>
-                            </select>
+                    <div id="decode-setup-card" class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-cyber-neonCyan/20 text-cyber-neonCyan flex items-center justify-center text-xs font-bold border border-cyber-neonCyan/30">2</span>
+                            <h2 class="text-base font-semibold text-white">Header Scan & Passphrase</h2>
                         </div>
-                        <div id="encode-key-wrapper">
-                            <label id="encode-key-label" class="block text-xs font-medium text-slate-300 mb-1">Encryption Key / Passphrase</label>
+
+                        <div id="decode-header-status" class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs flex flex-col gap-1 font-mono">
+                            <div class="text-slate-400">Status: <span class="text-slate-500">Waiting for image...</span></div>
+                        </div>
+
+                        <div id="decode-key-wrapper" class="hidden">
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase Key</label>
                             <div class="relative">
-                                <input type="password" id="encode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyber-500 font-mono" placeholder="Secret passphrase key">
-                                <button type="button" onclick="togglePasswordVisibility('encode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                <input type="password" id="decode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyber-neonCyan" placeholder="Enter key">
+                                <button type="button" onclick="togglePasswordVisibility('decode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </button>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Game-Gated Security Options -->
-                    <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl flex flex-col gap-3">
-                        <div class="flex items-center justify-between">
+                        <button id="btn-decode-process" onclick="processImageDecode()" disabled class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="key-round" class="w-4 h-4"></i>
+                            <span>Extract & Decrypt Payload</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 flex flex-col gap-6">
+                    <!-- Game Challenge Panel -->
+                    <div id="img-game-panel" class="glass-panel p-6 rounded-2xl hidden flex-col items-center justify-center border-cyber-neonPurple/40 glow-purple">
+                        <div class="w-full flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
                             <div class="flex items-center gap-2">
-                                <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple"></i>
+                                <i data-lucide="gamepad-2" class="w-6 h-6 text-cyber-neonPurple"></i>
                                 <div>
-                                    <h3 class="text-sm font-semibold text-white">Require Memory Game Challenge</h3>
-                                    <p class="text-xs text-slate-400">Lock payload until receiver clears specified Simon game rounds</p>
+                                    <h3 class="font-bold text-base text-white">Game Lock Active!</h3>
+                                    <p class="text-xs text-slate-400">Clear pattern sequence to unlock decryption</p>
                                 </div>
                             </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="encode-game-lock-toggle" onchange="toggleGameLockOption()" class="sr-only peer">
-                                <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyber-neonPurple"></div>
-                            </label>
-                        </div>
-
-                        <div id="encode-game-rounds-wrapper" class="hidden grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-300 mb-1">Required Game Rounds</label>
-                                <input type="number" id="encode-game-rounds" min="1" max="20" value="5" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyber-neonPurple">
-                            </div>
-                            <div class="flex items-center text-xs text-slate-400 pt-4">
-                                <i data-lucide="info" class="w-4 h-4 text-cyber-neonPurple inline shrink-0 mr-1.5"></i>
-                                Receiver must complete this round count before passphrase unlock!
+                            <div class="flex items-center gap-4">
+                                <div class="text-right">
+                                    <span class="text-xs text-slate-400 block">CURRENT</span>
+                                    <span id="img-game-current" class="text-xl font-bold font-mono text-white">0</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-slate-400 block font-semibold">REQUIRED</span>
+                                    <span id="img-game-required" class="text-xl font-bold font-mono text-cyber-neonPurple">0</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Process Button -->
-                    <button id="btn-encode-process" onclick="processEncode()" disabled class="w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyber-600 via-cyber-neonPurple to-cyber-neonCyan hover:brightness-110 text-white shadow-lg shadow-cyber-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i data-lucide="cpu" class="w-4 h-4"></i>
-                        <span>Embed & Generate Stego Image</span>
-                    </button>
-                </div>
-            </div>
+                        <div id="img-game-status" class="text-sm font-bold text-cyber-neonPurple mb-4">PRESS START CHALLENGE</div>
 
-            <!-- Image Preview & Side-By-Side Visualizer -->
-            <div class="lg:col-span-5 flex flex-col gap-6">
-                <!-- Carrier Image Preview -->
-                <div class="glass-panel p-5 rounded-2xl flex flex-col items-center justify-center min-h-[260px] relative overflow-hidden">
-                    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 w-full flex justify-between items-center">
-                        <span>Original Carrier Preview</span>
-                        <span id="encode-resolution-badge" class="normal-case text-slate-500 font-mono"></span>
-                    </h3>
-                    <div id="encode-preview-placeholder" class="text-center text-slate-600 py-12">
-                        <i data-lucide="file-image" class="w-16 h-16 mx-auto mb-2 opacity-40"></i>
-                        <p class="text-xs">No image loaded yet</p>
-                    </div>
-                    <img id="encode-preview-img" class="hidden max-h-[280px] w-auto rounded-lg object-contain shadow-md" alt="Carrier preview">
-                </div>
-
-                <!-- Result Box & Stegano Visual Inspector -->
-                <div id="encode-result-box" class="glass-panel p-5 rounded-2xl hidden border-cyber-500/40 glow-indigo">
-                    <div class="flex items-center gap-2 mb-2 text-emerald-400">
-                        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                        <h3 class="font-bold text-sm text-white">Stego-Image Created!</h3>
-                    </div>
-                    <p class="text-xs text-slate-300 mb-4">Payload embedded into pixel LSB matrix with zero visible distortion.</p>
-
-                    <!-- Pixel Difference Inspection Canvas -->
-                    <div class="bg-slate-950 p-3 rounded-xl mb-4 border border-slate-800 flex flex-col items-center">
-                        <span class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-wider">Stego Output Preview</span>
-                        <canvas id="encode-output-canvas" class="max-h-[180px] max-w-full rounded border border-slate-800"></canvas>
-                    </div>
-
-                    <a id="download-stego-btn" download="stego-vault.png" onclick="this.download = 'stego-vault-' + Math.floor(1000 + Math.random() * 9000) + '.png'" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer">                        <i data-lucide="download" class="w-4 h-4"></i>
-                        <span>Download PNG Stego Image</span>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- =================================================================== -->
-        <!-- PANEL 2: DECODE & UNLOCK MESSAGE -->
-        <!-- =================================================================== -->
-        <section id="panel-decode" class="grid grid-cols-1 lg:grid-cols-12 gap-6 hidden">
-            <!-- Left: Stego Upload & Decryption Control -->
-            <div class="lg:col-span-5 flex flex-col gap-6">
-                <!-- Step 1: Upload Stego Image -->
-                <div class="glass-panel p-5 rounded-2xl">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="w-6 h-6 rounded-full bg-cyber-neonCyan/20 text-cyber-neonCyan flex items-center justify-center text-xs font-bold border border-cyber-neonCyan/30">1</span>
-                        <h2 class="text-base font-semibold text-white">Upload Stego Vault Image</h2>
-                    </div>
-
-                    <div id="decode-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyber-neonCyan transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-slate-900/40">
-                        <input type="file" id="decode-file-input" accept="image/png, image/bmp, image/webp" class="hidden">
-                        <div class="p-3 bg-slate-800/80 rounded-full text-cyber-neonCyan mb-3 group-hover:scale-110 transition-transform">
-                            <i data-lucide="file-search" class="w-8 h-8"></i>
+                        <div class="grid grid-cols-3 gap-3 w-full max-w-[280px] aspect-square p-3 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-2xl my-2">
+                            <button onclick="handleGamePadClick(0)" id="pad-0" class="simon-btn bg-rose-950/60 border-2 border-rose-600/40 rounded-xl text-rose-500 font-bold text-lg flex items-center justify-center">1</button>
+                            <button onclick="handleGamePadClick(1)" id="pad-1" class="simon-btn bg-amber-950/60 border-2 border-amber-600/40 rounded-xl text-amber-500 font-bold text-lg flex items-center justify-center">2</button>
+                            <button onclick="handleGamePadClick(2)" id="pad-2" class="simon-btn bg-emerald-950/60 border-2 border-emerald-600/40 rounded-xl text-emerald-500 font-bold text-lg flex items-center justify-center">3</button>
+                            <button onclick="handleGamePadClick(3)" id="pad-3" class="simon-btn bg-cyan-950/60 border-2 border-cyan-600/40 rounded-xl text-cyan-500 font-bold text-lg flex items-center justify-center">4</button>
+                            <button onclick="handleGamePadClick(4)" id="pad-4" class="simon-btn bg-indigo-950/60 border-2 border-indigo-600/40 rounded-xl text-indigo-500 font-bold text-lg flex items-center justify-center">5</button>
+                            <button onclick="handleGamePadClick(5)" id="pad-5" class="simon-btn bg-fuchsia-950/60 border-2 border-fuchsia-600/40 rounded-xl text-fuchsia-500 font-bold text-lg flex items-center justify-center">6</button>
+                            <button onclick="handleGamePadClick(6)" id="pad-6" class="simon-btn bg-teal-950/60 border-2 border-teal-600/40 rounded-xl text-teal-500 font-bold text-lg flex items-center justify-center">7</button>
+                            <button onclick="handleGamePadClick(7)" id="pad-7" class="simon-btn bg-violet-950/60 border-2 border-violet-600/40 rounded-xl text-violet-500 font-bold text-lg flex items-center justify-center">8</button>
+                            <button onclick="handleGamePadClick(8)" id="pad-8" class="simon-btn bg-sky-950/60 border-2 border-sky-600/40 rounded-xl text-sky-500 font-bold text-lg flex items-center justify-center">9</button>
                         </div>
-                        <p class="text-sm font-medium text-slate-200">Upload Stego Image File</p>
-                        <p class="text-xs text-slate-400 mt-1">Must be lossless PNG/BMP containing embedded LSB header</p>
-                    </div>
-                </div>
 
-                <!-- Step 2: Inspection & Decryption Inputs -->
-                <div id="decode-setup-card" class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
-                    <div class="flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-cyber-neonCyan/20 text-cyber-neonCyan flex items-center justify-center text-xs font-bold border border-cyber-neonCyan/30">2</span>
-                        <h2 class="text-base font-semibold text-white">Header Scan & Security Key</h2>
+                        <button onclick="startGameChallenge()" class="mt-4 py-2.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg transition-all">
+                            Start Challenge
+                        </button>
                     </div>
 
-                    <!-- Header Scan Status Box -->
-                    <div id="decode-header-status" class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs flex flex-col gap-1 font-mono">
-                        <div class="text-slate-400">Header Status: <span class="text-slate-500">Waiting for image upload...</span></div>
-                    </div>
-
-                    <!-- Passphrase Input -->
-                    <div id="decode-key-wrapper" class="hidden">
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase / Key</label>
-                        <div class="relative">
-                            <input type="password" id="decode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 font-mono placeholder-slate-600 focus:outline-none focus:border-cyber-neonCyan" placeholder="Enter encryption key">
-                            <button type="button" onclick="togglePasswordVisibility('decode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
-                                <i data-lucide="eye" class="w-4 h-4"></i>
+                    <!-- Decrypted Output Area -->
+                    <div class="glass-panel p-5 rounded-2xl flex-1 flex flex-col min-h-[280px]">
+                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-800">
+                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                <i data-lucide="terminal" class="w-4 h-4 text-cyber-neonCyan"></i>
+                                <span>Decrypted Image Payload</span>
+                            </h3>
+                            <button onclick="copyToClipboard('img-decode-output')" class="text-xs text-cyber-neonCyan hover:underline flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy Text</span>
                             </button>
                         </div>
+                        <div id="img-decode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-emerald-400 overflow-y-auto whitespace-pre-wrap break-all min-h-[160px]">
+                            <span class="text-slate-600 italic">Extracted secret payload will appear here...</span>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <button id="btn-decode-process" onclick="processDecodeDirect()" disabled class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i data-lucide="key-round" class="w-4 h-4"></i>
-                        <span id="btn-decode-label">Extract & Decrypt Payload</span>
+        <!-- =================================================================== -->
+        <!-- SECTION 2: TEXT STEGANOGRAPHY & PURE CIPHER STUDIO -->
+        <!-- =================================================================== -->
+        <div id="workspace-text" class="flex flex-col gap-6 hidden">
+            
+            <!-- Secondary Navigation: Encode vs Decode -->
+            <div class="flex justify-center">
+                <div class="flex p-1 bg-slate-900/80 rounded-xl border border-slate-800">
+                    <button id="txt-tab-encode" onclick="switchTextTab('encode')" class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-neonPink text-white shadow">
+                        <i data-lucide="file-key" class="w-4 h-4"></i>
+                        <span>Text Encode & Hide</span>
+                    </button>
+                    <button id="txt-tab-decode" onclick="switchTextTab('decode')" class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white">
+                        <i data-lucide="file-search" class="w-4 h-4"></i>
+                        <span>Text Reveal & Decrypt</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Right: Interactive Game-Gated Unlocker / Decrypted Payload Output -->
-            <div class="lg:col-span-7 flex flex-col gap-6">
-                
-                <!-- Game Lock Panel (Active when image has required game level > 0 and game not yet beaten) -->
-                <div id="decode-game-panel" class="glass-panel p-6 rounded-2xl hidden flex-col items-center justify-center relative overflow-hidden border-cyber-neonPurple/40 glow-purple">
-                    
-                    <div class="w-full flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="gamepad-2" class="w-6 h-6 text-cyber-neonPurple"></i>
+            <!-- Text Encode Workspace -->
+            <div id="txt-panel-encode" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-7 flex flex-col gap-6">
+                    <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
+                        <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                            <i data-lucide="shield-alert" class="w-5 h-5 text-cyber-neonPink"></i>
+                            <span>Text Payload & Cover Text</span>
+                        </h2>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Secret Message</label>
+                            <textarea id="txt-secret-input" rows="3" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-neonPink font-mono resize-none" placeholder="Enter secret message to encode..."></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Cover Text (Optional for Zero-Width Mode)</label>
+                            <textarea id="txt-cover-input" rows="3" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-neonPink font-mono resize-none" placeholder="Normal cover text to disguise the hidden payload (e.g. 'Hey, meeting at 5pm today!')..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <h3 class="font-bold text-base text-white">Game Lock Active!</h3>
-                                <p class="text-xs text-slate-400">Complete pattern challenge to unlock decryption</p>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Steganography Technique</label>
+                                <select id="txt-stego-mode" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyber-neonPink">
+                                    <option value="ZERO_WIDTH">Zero-Width Invisible Characters (Invisibly appended to Cover Text)</option>
+                                    <option value="CIPHERTEXT_ONLY">Pure Ciphertext Armor (Base64 Output)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Encryption Cipher</label>
+                                <select id="txt-cipher-type" onchange="toggleCipherKeyInput('txt-encode')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyber-neonPink">
+                                    <option value="NONE">None / Plaintext</option>
+                                    <option value="XOR">XOR Cipher</option>
+                                    <option value="VIGENERE" selected>Vigenère Cipher</option>
+                                    <option value="AES-GCM">AES-GCM 256-bit (PBKDF2)</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="text-right">
-                                <span class="text-xs text-slate-400 block">CURRENT</span>
-                                <span id="game-current-level" class="text-xl font-bold font-mono text-white">0</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-slate-400 block font-semibold">REQUIRED</span>
-                                <span id="game-required-level" class="text-xl font-bold font-mono text-cyber-neonPurple">0</span>
+
+                        <div id="txt-encode-key-wrapper">
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase / Key</label>
+                            <div class="relative">
+                                <input type="password" id="txt-encode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyber-neonPink font-mono" placeholder="Secret passphrase key">
+                                <button type="button" onclick="togglePasswordVisibility('txt-encode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="game-status-text" class="text-sm font-bold text-cyber-neonPurple mb-4">PRESS START CHALLENGE</div>
+                        <!-- Game Lock Option -->
+                        <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple"></i>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-white">Require Memory Game Challenge</h3>
+                                        <p class="text-xs text-slate-400">Lock message behind Simon memory challenge rounds</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="txt-game-lock-toggle" onchange="toggleGameLockOption('txt-encode')" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyber-neonPurple"></div>
+                                </label>
+                            </div>
 
-                    <!-- 3x3 Memory Pad Grid -->
-                    <div class="grid grid-cols-3 gap-3 w-full max-w-[300px] aspect-square p-3 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-2xl my-2">
-                        <button onclick="handlePadClick(0)" id="pad-0" class="simon-btn bg-rose-950/60 hover:bg-rose-900/80 border-2 border-rose-600/40 rounded-xl text-rose-500 font-bold text-lg flex items-center justify-center">1</button>
-                        <button onclick="handlePadClick(1)" id="pad-1" class="simon-btn bg-amber-950/60 hover:bg-amber-900/80 border-2 border-amber-600/40 rounded-xl text-amber-500 font-bold text-lg flex items-center justify-center">2</button>
-                        <button onclick="handlePadClick(2)" id="pad-2" class="simon-btn bg-emerald-950/60 hover:bg-emerald-900/80 border-2 border-emerald-600/40 rounded-xl text-emerald-500 font-bold text-lg flex items-center justify-center">3</button>
-                        <button onclick="handlePadClick(3)" id="pad-3" class="simon-btn bg-cyan-950/60 hover:bg-cyan-900/80 border-2 border-cyan-600/40 rounded-xl text-cyan-500 font-bold text-lg flex items-center justify-center">4</button>
-                        <button onclick="handlePadClick(4)" id="pad-4" class="simon-btn bg-indigo-950/60 hover:bg-indigo-900/80 border-2 border-indigo-600/40 rounded-xl text-indigo-500 font-bold text-lg flex items-center justify-center">5</button>
-                        <button onclick="handlePadClick(5)" id="pad-5" class="simon-btn bg-fuchsia-950/60 hover:bg-fuchsia-900/80 border-2 border-fuchsia-600/40 rounded-xl text-fuchsia-500 font-bold text-lg flex items-center justify-center">6</button>
-                        <button onclick="handlePadClick(6)" id="pad-6" class="simon-btn bg-teal-950/60 hover:bg-teal-900/80 border-2 border-teal-600/40 rounded-xl text-teal-500 font-bold text-lg flex items-center justify-center">7</button>
-                        <button onclick="handlePadClick(7)" id="pad-7" class="simon-btn bg-violet-950/60 hover:bg-violet-900/80 border-2 border-violet-600/40 rounded-xl text-violet-500 font-bold text-lg flex items-center justify-center">8</button>
-                        <button onclick="handlePadClick(8)" id="pad-8" class="simon-btn bg-sky-950/60 hover:bg-sky-900/80 border-2 border-sky-600/40 rounded-xl text-sky-500 font-bold text-lg flex items-center justify-center">9</button>
-                    </div>
+                            <div id="txt-game-rounds-wrapper" class="hidden grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">Required Game Rounds</label>
+                                    <input type="number" id="txt-game-rounds" min="1" max="20" value="5" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyber-neonPurple">
+                                </div>
+                            </div>
+                        </div>
 
-                    <!-- Game Control Buttons -->
-                    <div class="mt-4 flex gap-3 w-full max-w-[300px]">
-                        <button id="btn-start-game" onclick="startGameChallenge()" class="flex-1 py-2.5 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/30 transition-all flex items-center justify-center gap-2">
-                            <i data-lucide="play" class="w-4 h-4"></i>
-                            <span>Start Memory Challenge</span>
+                        <button onclick="processTextEncode()" class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:brightness-110 text-white shadow-lg shadow-pink-600/30 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="wand2" class="w-4 h-4"></i>
+                            <span>Encode & Hide Text Payload</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Decrypted Message Output Terminal -->
-                <div class="glass-panel p-5 rounded-2xl flex-1 flex flex-col min-h-[300px]">
-                    <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-800">
-                        <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                            <i data-lucide="terminal" class="w-4 h-4 text-cyber-neonCyan"></i>
-                            <span>Extracted Payload Terminal Output</span>
-                        </h3>
-                        <button onclick="copyToClipboard('decode-output-text')" class="text-xs text-cyber-neonCyan hover:underline flex items-center gap-1">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                            <span>Copy Text</span>
-                        </button>
-                    </div>
-                    <div id="decode-output-text" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-emerald-400 overflow-y-auto whitespace-pre-wrap break-all min-h-[180px]">
-                        <span class="text-slate-600 italic">Select a stego image and execute extraction to reveal hidden contents...</span>
+                <!-- Text Stego Result Output -->
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    <div class="glass-panel p-5 rounded-2xl flex-1 flex flex-col border-cyber-neonPink/30 glow-pink">
+                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-800">
+                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                <i data-lucide="copy-check" class="w-4 h-4 text-cyber-neonPink"></i>
+                                <span>Stego Text Result</span>
+                            </h3>
+                            <button onclick="copyToClipboard('txt-encode-output')" class="text-xs text-cyber-neonPink hover:underline flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy Text</span>
+                            </button>
+                        </div>
+                        <div id="txt-encode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-pink-300 overflow-y-auto whitespace-pre-wrap break-all min-h-[220px]">
+                            <span class="text-slate-600 italic">Generated text payload (containing hidden zero-width Unicode characters or ciphertext) will appear here ready to copy/paste...</span>
+                        </div>
+                        <div class="mt-3 text-[11px] text-slate-400 flex items-center gap-1.5">
+                            <i data-lucide="info" class="w-3.5 h-3.5 text-cyber-neonPink shrink-0"></i>
+                            <span>You can copy/paste this exact text into Discord, WhatsApp, Email, or Slack!</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- Text Decode Workspace -->
+            <div id="txt-panel-decode" class="grid grid-cols-1 lg:grid-cols-12 gap-6 hidden">
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
+                        <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                            <i data-lucide="search" class="w-5 h-5 text-cyber-neonCyan"></i>
+                            <span>Paste Stego Text</span>
+                        </h2>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Stego Text or Ciphertext</label>
+                            <textarea id="txt-decode-input" rows="5" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-neonCyan font-mono resize-none" placeholder="Paste the text containing zero-width hidden characters or armor ciphertext here..."></textarea>
+                        </div>
+
+                        <button onclick="inspectTextHeader()" class="py-2.5 px-4 rounded-xl font-semibold text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="scan" class="w-4 h-4"></i>
+                            <span>Scan Payload Header</span>
+                        </button>
+
+                        <div id="txt-decode-status" class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs flex flex-col gap-1 font-mono">
+                            <div class="text-slate-400">Status: <span class="text-slate-500">Waiting for input scan...</span></div>
+                        </div>
+
+                        <div id="txt-decode-key-wrapper" class="hidden">
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase / Key</label>
+                            <div class="relative">
+                                <input type="password" id="txt-decode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyber-neonCyan" placeholder="Enter key">
+                                <button type="button" onclick="togglePasswordVisibility('txt-decode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button id="btn-txt-decode-process" onclick="processTextDecode()" disabled class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="unlock" class="w-4 h-4"></i>
+                            <span>Reveal Secret Payload</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 flex flex-col gap-6">
+                    <!-- Text Game Lock Panel -->
+                    <div id="txt-game-panel" class="glass-panel p-6 rounded-2xl hidden flex-col items-center justify-center border-cyber-neonPurple/40 glow-purple">
+                        <div class="w-full flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="gamepad-2" class="w-6 h-6 text-cyber-neonPurple"></i>
+                                <div>
+                                    <h3 class="font-bold text-base text-white">Text Game Lock Active!</h3>
+                                    <p class="text-xs text-slate-400">Complete pattern challenge to unlock message decryption</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-right">
+                                    <span class="text-xs text-slate-400 block">CURRENT</span>
+                                    <span id="txt-game-current" class="text-xl font-bold font-mono text-white">0</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-slate-400 block font-semibold">REQUIRED</span>
+                                    <span id="txt-game-required" class="text-xl font-bold font-mono text-cyber-neonPurple">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="txt-game-status" class="text-sm font-bold text-cyber-neonPurple mb-4">PRESS START CHALLENGE</div>
+
+                        <div class="grid grid-cols-3 gap-3 w-full max-w-[280px] aspect-square p-3 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-2xl my-2">
+                            <button onclick="handleGamePadClick(0)" id="tpad-0" class="simon-btn bg-rose-950/60 border-2 border-rose-600/40 rounded-xl text-rose-500 font-bold text-lg flex items-center justify-center">1</button>
+                            <button onclick="handleGamePadClick(1)" id="tpad-1" class="simon-btn bg-amber-950/60 border-2 border-amber-600/40 rounded-xl text-amber-500 font-bold text-lg flex items-center justify-center">2</button>
+                            <button onclick="handleGamePadClick(2)" id="tpad-2" class="simon-btn bg-emerald-950/60 border-2 border-emerald-600/40 rounded-xl text-emerald-500 font-bold text-lg flex items-center justify-center">3</button>
+                            <button onclick="handleGamePadClick(3)" id="tpad-3" class="simon-btn bg-cyan-950/60 border-2 border-cyan-600/40 rounded-xl text-cyan-500 font-bold text-lg flex items-center justify-center">4</button>
+                            <button onclick="handleGamePadClick(4)" id="tpad-4" class="simon-btn bg-indigo-950/60 border-2 border-indigo-600/40 rounded-xl text-indigo-500 font-bold text-lg flex items-center justify-center">5</button>
+                            <button onclick="handleGamePadClick(5)" id="tpad-5" class="simon-btn bg-fuchsia-950/60 border-2 border-fuchsia-600/40 rounded-xl text-fuchsia-500 font-bold text-lg flex items-center justify-center">6</button>
+                            <button onclick="handleGamePadClick(6)" id="tpad-6" class="simon-btn bg-teal-950/60 border-2 border-teal-600/40 rounded-xl text-teal-500 font-bold text-lg flex items-center justify-center">7</button>
+                            <button onclick="handleGamePadClick(7)" id="tpad-7" class="simon-btn bg-violet-950/60 border-2 border-violet-600/40 rounded-xl text-violet-500 font-bold text-lg flex items-center justify-center">8</button>
+                            <button onclick="handleGamePadClick(8)" id="tpad-8" class="simon-btn bg-sky-950/60 border-2 border-sky-600/40 rounded-xl text-sky-500 font-bold text-lg flex items-center justify-center">9</button>
+                        </div>
+
+                        <button onclick="startGameChallenge('text')" class="mt-4 py-2.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg transition-all">
+                            Start Challenge
+                        </button>
+                    </div>
+
+                    <!-- Text Decrypted Output -->
+                    <div class="glass-panel p-5 rounded-2xl flex-1 flex flex-col min-h-[280px]">
+                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-800">
+                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                <i data-lucide="terminal" class="w-4 h-4 text-cyber-neonCyan"></i>
+                                <span>Decrypted Text Output</span>
+                            </h3>
+                            <button onclick="copyToClipboard('txt-decode-output')" class="text-xs text-cyber-neonCyan hover:underline flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy Text</span>
+                            </button>
+                        </div>
+                        <div id="txt-decode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-emerald-400 overflow-y-auto whitespace-pre-wrap break-all min-h-[160px]">
+                            <span class="text-slate-600 italic">Revealed secret message will appear here...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </main>
 
-    <!-- Application Logic -->
     <script>
         // =========================================================================
-        // GLOBAL STATE & UTILITIES
+        // GLOBAL APP STATE & AUDIO SYNTHESIZER
         // =========================================================================
-        let currentTab = 'encode';
+        let currentPrimaryMode = 'image'; // 'image' or 'text'
+        let currentImageTab = 'encode'; // 'encode' or 'decode'
+        let currentTextTab = 'encode';  // 'encode' or 'decode'
+
         let audioCtx = null;
 
         function getAudioContext() {
@@ -435,7 +648,7 @@
                 osc.start();
                 osc.stop(ctx.currentTime + duration);
             } catch (e) {
-                // Ignore audio autoplay restrictions
+                // Audio autoplay fallback
             }
         }
 
@@ -484,7 +697,7 @@
 
         function copyToClipboard(elementId) {
             const text = document.getElementById(elementId).innerText;
-            if (!text || text.includes('Select a stego image')) {
+            if (!text || text.includes('will appear here')) {
                 showToast('No payload text available to copy', 'error');
                 return;
             }
@@ -500,52 +713,117 @@
         }
 
         // =========================================================================
-        // NAVIGATION & TOGGLES
+        // MODE & TAB SWITCHERS
         // =========================================================================
-        function switchTab(tab) {
-            currentTab = tab;
-            ['encode', 'decode'].forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                const panel = document.getElementById(`panel-${t}`);
-                if (t === tab) {
-                    btn.className = "flex items-center gap-2 px-3 sm:px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-cyber-600 text-white shadow";
-                    panel.classList.remove('hidden');
-                } else {
-                    btn.className = "flex items-center gap-2 px-3 sm:px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all duration-200";
-                    panel.classList.add('hidden');
-                }
-            });
+        function switchPrimaryMode(mode) {
+            currentPrimaryMode = mode;
+            const imgBtn = document.getElementById('mode-image-btn');
+            const txtBtn = document.getElementById('mode-text-btn');
+            const imgWs = document.getElementById('workspace-image');
+            const txtWs = document.getElementById('workspace-text');
+
+            if (mode === 'image') {
+                imgBtn.className = "flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-cyber-600 text-white shadow";
+                txtBtn.className = "flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white transition-all duration-200";
+                imgWs.classList.remove('hidden');
+                txtWs.classList.add('hidden');
+            } else {
+                txtBtn.className = "flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-cyber-neonPink text-white shadow";
+                imgBtn.className = "flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white transition-all duration-200";
+                txtWs.classList.remove('hidden');
+                imgWs.classList.add('hidden');
+            }
+        }
+
+        function switchImageTab(tab) {
+            currentImageTab = tab;
+            const encBtn = document.getElementById('img-tab-encode');
+            const decBtn = document.getElementById('img-tab-decode');
+            const encPanel = document.getElementById('img-panel-encode');
+            const decPanel = document.getElementById('img-panel-decode');
+
+            if (tab === 'encode') {
+                encBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-600 text-white shadow";
+                decBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white";
+                encPanel.classList.remove('hidden');
+                decPanel.classList.add('hidden');
+            } else {
+                decBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-600 text-white shadow";
+                encBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white";
+                decPanel.classList.remove('hidden');
+                encPanel.classList.add('hidden');
+            }
+        }
+
+        function switchTextTab(tab) {
+            currentTextTab = tab;
+            const encBtn = document.getElementById('txt-tab-encode');
+            const decBtn = document.getElementById('txt-tab-decode');
+            const encPanel = document.getElementById('txt-panel-encode');
+            const decPanel = document.getElementById('txt-panel-decode');
+
+            if (tab === 'encode') {
+                encBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-neonPink text-white shadow";
+                decBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white";
+                encPanel.classList.remove('hidden');
+                decPanel.classList.add('hidden');
+            } else {
+                decBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-neonPink text-white shadow";
+                encBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white";
+                decPanel.classList.remove('hidden');
+                encPanel.classList.add('hidden');
+            }
         }
 
         function toggleCipherKeyInput(prefix) {
-            const cipherType = document.getElementById(`${prefix}-cipher-type`).value;
-            const keyWrapper = document.getElementById(`${prefix}-key-wrapper`);
-            if (cipherType === 'NONE') {
-                keyWrapper.style.opacity = '0.4';
-                keyWrapper.style.pointerEvents = 'none';
-            } else {
-                keyWrapper.style.opacity = '1';
-                keyWrapper.style.pointerEvents = 'auto';
+            let cipherType = 'NONE';
+            let keyWrapper = null;
+
+            if (prefix === 'encode') {
+                cipherType = document.getElementById('encode-cipher-type').value;
+                keyWrapper = document.getElementById('encode-key-wrapper');
+            } else if (prefix === 'txt-encode') {
+                cipherType = document.getElementById('txt-cipher-type').value;
+                keyWrapper = document.getElementById('txt-encode-key-wrapper');
+            }
+
+            if (keyWrapper) {
+                if (cipherType === 'NONE') {
+                    keyWrapper.style.opacity = '0.4';
+                    keyWrapper.style.pointerEvents = 'none';
+                } else {
+                    keyWrapper.style.opacity = '1';
+                    keyWrapper.style.pointerEvents = 'auto';
+                }
             }
         }
 
-        function toggleGameLockOption() {
-            const isChecked = document.getElementById('encode-game-lock-toggle').checked;
-            const roundsWrapper = document.getElementById('encode-game-rounds-wrapper');
-            if (isChecked) {
-                roundsWrapper.classList.remove('hidden');
-                roundsWrapper.classList.add('grid');
-            } else {
-                roundsWrapper.classList.add('hidden');
-                roundsWrapper.classList.remove('grid');
+        function toggleGameLockOption(prefix) {
+            let isChecked = false;
+            let roundsWrapper = null;
+
+            if (prefix === 'encode') {
+                isChecked = document.getElementById('encode-game-lock-toggle').checked;
+                roundsWrapper = document.getElementById('encode-game-rounds-wrapper');
+            } else if (prefix === 'txt-encode') {
+                isChecked = document.getElementById('txt-game-lock-toggle').checked;
+                roundsWrapper = document.getElementById('txt-game-rounds-wrapper');
+            }
+
+            if (roundsWrapper) {
+                if (isChecked) {
+                    roundsWrapper.classList.remove('hidden');
+                    roundsWrapper.classList.add('grid');
+                } else {
+                    roundsWrapper.classList.add('hidden');
+                    roundsWrapper.classList.remove('grid');
+                }
             }
         }
 
         // =========================================================================
-        // CRYPTOGRAPHY ENGINE
+        // MULTI-CIPHER ENGINE
         // =========================================================================
-        
-        // 1. XOR Cipher
         function xorEncryptDecrypt(dataBytes, keyString) {
             if (!keyString) return dataBytes;
             const keyBytes = new TextEncoder().encode(keyString);
@@ -556,7 +834,6 @@
             return output;
         }
 
-        // 2. Vigenère Cipher (Full byte shifting)
         function vigenereCipher(dataBytes, keyString, decrypt = false) {
             if (!keyString) return dataBytes;
             const keyBytes = new TextEncoder().encode(keyString);
@@ -569,7 +846,6 @@
             return output;
         }
 
-        // 3. AES-GCM 256-bit Web Crypto API
         async function deriveAesKey(password, salt) {
             const enc = new TextEncoder();
             const keyMaterial = await window.crypto.subtle.importKey(
@@ -629,16 +905,6 @@
             return new Uint8Array(decryptedContent);
         }
 
-        // =========================================================================
-        // LSB STEGANOGRAPHY ENGINE WITH GAME-LOCK HEADER
-        // =========================================================================
-        // Header Format stored in pixels (RGB channels):
-        // [3 bytes Magic "STG"][1 byte Cipher Code][1 byte Game Level Required][4 bytes Payload Length UI32][Payload Bytes]
-        // Header Total Size: 9 bytes
-        // Cipher Codes: 0=NONE, 1=XOR, 2=VIGENERE, 3=AES-GCM
-
-        const MAGIC_HEADER = [83, 84, 71]; // "STG"
-
         function cipherToCode(cipher) {
             switch (cipher) {
                 case 'NONE': return 0;
@@ -659,13 +925,104 @@
             }
         }
 
+        // =========================================================================
+        // ZERO-WIDTH TEXT STEGANOGRAPHY ENGINE
+        // =========================================================================
+        // Uses Unicode zero-width space characters:
+        // U+200B = Zero-Width Space ('0' bit)
+        // U+200C = Zero-Width Non-Joiner ('1' bit)
+        // U+200D = Zero-Width Joiner (Delimiter / Binary separator)
+
+        const ZW_ZERO = '\u200B';
+        const ZW_ONE = '\u200C';
+        const ZW_DELIM = '\u200D';
+
+        function bytesToZeroWidth(uint8Array) {
+            let zwString = '';
+            for (let i = 0; i < uint8Array.length; i++) {
+                const byte = uint8Array[i];
+                for (let b = 7; b >= 0; b--) {
+                    const bit = (byte >> b) & 1;
+                    zwString += (bit === 1) ? ZW_ONE : ZW_ZERO;
+                }
+            }
+            return zwString + ZW_DELIM; // End marker
+        }
+
+        function zeroWidthToBytes(zwString) {
+            let bits = '';
+            for (let i = 0; i < zwString.length; i++) {
+                const char = zwString[i];
+                if (char === ZW_ZERO) bits += '0';
+                else if (char === ZW_ONE) bits += '1';
+                else if (char === ZW_DELIM) break;
+            }
+
+            const byteLen = Math.floor(bits.length / 8);
+            const bytes = new Uint8Array(byteLen);
+            for (let i = 0; i < byteLen; i++) {
+                const byteStr = bits.substr(i * 8, 8);
+                bytes[i] = parseInt(byteStr, 2);
+            }
+            return bytes;
+        }
+
+        // Header format for Text/Zero-Width Payload (Pre-binary):
+        // [3 bytes "STG"][1 byte Cipher Code][1 byte Game Level][4 bytes Payload Length UI32][Payload Bytes]
+
+        const MAGIC_HEADER = [83, 84, 71]; // "STG"
+
+        function packStegoBuffer(cipherType, requiredRounds, encryptedBytes) {
+            const header = new Uint8Array(9);
+            header[0] = MAGIC_HEADER[0];
+            header[1] = MAGIC_HEADER[1];
+            header[2] = MAGIC_HEADER[2];
+            header[3] = cipherToCode(cipherType);
+            header[4] = Math.min(255, Math.max(0, requiredRounds));
+
+            const len = encryptedBytes.length;
+            header[5] = (len >> 24) & 0xFF;
+            header[6] = (len >> 16) & 0xFF;
+            header[7] = (len >> 8) & 0xFF;
+            header[8] = len & 0xFF;
+
+            const fullBytes = new Uint8Array(header.length + encryptedBytes.length);
+            fullBytes.set(header, 0);
+            fullBytes.set(encryptedBytes, header.length);
+            return fullBytes;
+        }
+
+        function unpackStegoBuffer(fullBytes) {
+            if (fullBytes.length < 9) throw new Error("Header payload too small");
+
+            if (fullBytes[0] !== MAGIC_HEADER[0] || fullBytes[1] !== MAGIC_HEADER[1] || fullBytes[2] !== MAGIC_HEADER[2]) {
+                throw new Error("No valid SteganoCrypt header found in payload!");
+            }
+
+            const cipherCode = fullBytes[3];
+            const requiredGameLevel = fullBytes[4];
+            const payloadLen = (fullBytes[5] << 24) | (fullBytes[6] << 16) | (fullBytes[7] << 8) | fullBytes[8];
+
+            const encryptedPayload = fullBytes.slice(9, 9 + payloadLen);
+
+            return {
+                cipherType: codeToCipher(cipherCode),
+                requiredGameLevel: requiredGameLevel,
+                payloadLength: payloadLen,
+                encryptedPayload: encryptedPayload
+            };
+        }
+
+        // =========================================================================
+        // IMAGE LSB STEGANOGRAPHY ENGINE
+        // =========================================================================
         function embedBytesInImageData(imageData, dataBytes) {
             const pixels = imageData.data;
             const totalBits = dataBytes.length * 8;
-            
             const maxBits = (imageData.width * imageData.height) * 3;
+
             if (totalBits > maxBits) {
-                throw new Error(`Message too large for image capacity! Needed ${totalBits} bits, max is ${maxBits} bits.`);
+                throw new Error(`Message exceeds image capacity! (${totalBits} bits needed, max ${maxBits})`);
             }
 
             let bitIdx = 0;
@@ -694,7 +1051,7 @@
             let bytePointer = 0;
 
             for (let i = 0; i < pixels.length; i++) {
-                if (i % 4 === 3) continue; // Skip Alpha
+                if (i % 4 === 3) continue;
 
                 const lsb = pixels[i] & 1;
                 bitBuffer = (bitBuffer << 1) | lsb;
@@ -706,26 +1063,11 @@
                     bitBuffer = 0;
                     bitsCount = 0;
 
-                    if (bytePointer === 9) {
-                        break; // Header read complete
-                    }
+                    if (bytePointer === 9) break;
                 }
             }
 
-            // Check Magic Prefix
-            if (headerBytes[0] !== MAGIC_HEADER[0] || headerBytes[1] !== MAGIC_HEADER[1] || headerBytes[2] !== MAGIC_HEADER[2]) {
-                throw new Error("No valid steganography payload header found in this image!");
-            }
-
-            const cipherCode = headerBytes[3];
-            const requiredGameLevel = headerBytes[4];
-            const payloadLen = (headerBytes[5] << 24) | (headerBytes[6] << 16) | (headerBytes[7] << 8) | headerBytes[8];
-
-            return {
-                cipherType: codeToCipher(cipherCode),
-                requiredGameLevel: requiredGameLevel,
-                payloadLength: payloadLen
-            };
+            return unpackStegoBuffer(headerBytes);
         }
 
         function extractPayloadBytesFromImageData(imageData, payloadLen) {
@@ -748,23 +1090,23 @@
                     if (bytePointer >= 9) { // Skip 9-byte header
                         extractedBytes[payloadIndex] = bitBuffer;
                         payloadIndex++;
-                        if (payloadIndex === payloadLen) {
-                            break;
-                        }
+                        if (payloadIndex === payloadLen) break;
                     }
                     bytePointer++;
                     bitBuffer = 0;
                     bitsCount = 0;
                 }
             }
-
             return extractedBytes;
         }
 
         // =========================================================================
-        // ENCODE WORKFLOW & UI BINDINGS
+        // IMAGE STEGANOGRAPHY WORKFLOW & EVENTS
         // =========================================================================
         let encodeLoadedImage = null;
+        let decodeLoadedImage = null;
+        let imgDetectedHeaderInfo = null;
+        let isImgGameRequirementCleared = false;
 
         const encodeDropzone = document.getElementById('encode-dropzone');
         const encodeFileInput = document.getElementById('encode-file-input');
@@ -775,9 +1117,7 @@
         encodeDropzone.addEventListener('drop', (e) => {
             e.preventDefault();
             encodeDropzone.classList.remove('border-cyber-500');
-            if (e.dataTransfer.files.length) {
-                handleEncodeFile(e.dataTransfer.files[0]);
-            }
+            if (e.dataTransfer.files.length) handleEncodeFile(e.dataTransfer.files[0]);
         });
 
         encodeFileInput.addEventListener('change', (e) => {
@@ -786,10 +1126,9 @@
 
         function handleEncodeFile(file) {
             if (!file.type.startsWith('image/')) {
-                showToast('Please upload a valid image file', 'error');
+                showToast('Please select a valid image file', 'error');
                 return;
             }
-
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
@@ -816,7 +1155,6 @@
         function updateCapacityCalculator() {
             if (!encodeLoadedImage) return;
 
-            // Header size = 9 bytes
             const totalBitsAvailable = encodeLoadedImage.width * encodeLoadedImage.height * 3;
             const maxPayloadBytes = Math.floor(totalBitsAvailable / 8) - 9;
             
@@ -833,15 +1171,9 @@
             const percent = Math.min(100, Math.round((currentBytes / maxPayloadBytes) * 100));
             capacityBar.style.width = `${percent}%`;
             capacityText.innerText = `${currentBytes} / ${maxPayloadBytes} bytes`;
-
-            if (percent > 90) {
-                capacityBar.className = "bg-rose-500 h-full w-0 transition-all duration-300";
-            } else {
-                capacityBar.className = "bg-cyber-neonCyan h-full w-0 transition-all duration-300";
-            }
         }
 
-        async function processEncode() {
+        async function processImageEncode() {
             if (!encodeLoadedImage) {
                 showToast('Please select a carrier image first', 'error');
                 return;
@@ -849,7 +1181,7 @@
 
             const message = document.getElementById('encode-message').value.trim();
             if (!message) {
-                showToast('Please enter a secret message to embed', 'error');
+                showToast('Please enter a secret payload', 'error');
                 return;
             }
 
@@ -857,7 +1189,7 @@
             const key = document.getElementById('encode-key').value;
 
             if (cipherType !== 'NONE' && !key) {
-                showToast(`Passphrase key is required for ${cipherType} cipher!`, 'error');
+                showToast(`Passphrase key required for ${cipherType} cipher`, 'error');
                 return;
             }
 
@@ -866,44 +1198,18 @@
 
             const btn = document.getElementById('btn-encode-process');
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Encrypting & Embedding...`;
-            lucide.createIcons();
 
             try {
-                // 1. Raw UTF-8 bytes
                 let rawPayload = new TextEncoder().encode(message);
-
-                // 2. Encrypt bytes
                 let encryptedPayload;
-                if (cipherType === 'NONE') {
-                    encryptedPayload = rawPayload;
-                } else if (cipherType === 'XOR') {
-                    encryptedPayload = xorEncryptDecrypt(rawPayload, key);
-                } else if (cipherType === 'VIGENERE') {
-                    encryptedPayload = vigenereCipher(rawPayload, key, false);
-                } else if (cipherType === 'AES-GCM') {
-                    encryptedPayload = await aesGcmEncrypt(rawPayload, key);
-                }
 
-                // 3. Construct Header [STG][Cipher][GameRounds][PayloadLen UI32 4-bytes]
-                const header = new Uint8Array(9);
-                header[0] = MAGIC_HEADER[0];
-                header[1] = MAGIC_HEADER[1];
-                header[2] = MAGIC_HEADER[2];
-                header[3] = cipherToCode(cipherType);
-                header[4] = Math.min(255, Math.max(0, requiredRounds)); // Store game round level
+                if (cipherType === 'NONE') encryptedPayload = rawPayload;
+                else if (cipherType === 'XOR') encryptedPayload = xorEncryptDecrypt(rawPayload, key);
+                else if (cipherType === 'VIGENERE') encryptedPayload = vigenereCipher(rawPayload, key, false);
+                else if (cipherType === 'AES-GCM') encryptedPayload = await aesGcmEncrypt(rawPayload, key);
 
-                const len = encryptedPayload.length;
-                header[5] = (len >> 24) & 0xFF;
-                header[6] = (len >> 16) & 0xFF;
-                header[7] = (len >> 8) & 0xFF;
-                header[8] = len & 0xFF;
+                const fullBytes = packStegoBuffer(cipherType, requiredRounds, encryptedPayload);
 
-                const fullBytesToEmbed = new Uint8Array(header.length + encryptedPayload.length);
-                fullBytesToEmbed.set(header, 0);
-                fullBytesToEmbed.set(encryptedPayload, header.length);
-
-                // 4. Manipulate Image Pixel Canvas
                 const canvas = document.createElement('canvas');
                 canvas.width = encodeLoadedImage.width;
                 canvas.height = encodeLoadedImage.height;
@@ -911,10 +1217,9 @@
                 ctx.drawImage(encodeLoadedImage, 0, 0);
 
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const stegoImageData = embedBytesInImageData(imageData, fullBytesToEmbed);
+                const stegoImageData = embedBytesInImageData(imageData, fullBytes);
                 ctx.putImageData(stegoImageData, 0, 0);
 
-                // 5. Display Preview Canvas & Download Link
                 const outputCanvas = document.getElementById('encode-output-canvas');
                 outputCanvas.width = canvas.width;
                 outputCanvas.height = canvas.height;
@@ -926,25 +1231,16 @@
                 downloadBtn.href = dataUrl;
 
                 document.getElementById('encode-result-box').classList.remove('hidden');
-                showToast(`Stego image successfully created! ${requiredRounds > 0 ? `(Requires ${requiredRounds} Game Rounds)` : ''}`, 'success');
+                showToast('Stego image generated successfully!', 'success');
 
             } catch (err) {
-                console.error(err);
                 showToast(`Encoding Error: ${err.message}`, 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i data-lucide="cpu" class="w-4 h-4"></i><span>Embed & Generate Stego Image</span>`;
-                lucide.createIcons();
             }
         }
 
-        // =========================================================================
-        // DECODE WORKFLOW & EMBEDDED GAME-LOCK CONTROLLER
-        // =========================================================================
-        let decodeLoadedImage = null;
-        let detectedHeaderInfo = null;
-        let isGameRequirementCleared = false;
-
+        // Image Decode Dropzone
         const decodeDropzone = document.getElementById('decode-dropzone');
         const decodeFileInput = document.getElementById('decode-file-input');
 
@@ -967,14 +1263,14 @@
                 const img = new Image();
                 img.onload = function() {
                     decodeLoadedImage = img;
-                    inspectStegoHeader();
+                    inspectImageStegoHeader();
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        function inspectStegoHeader() {
+        function inspectImageStegoHeader() {
             if (!decodeLoadedImage) return;
 
             const canvas = document.createElement('canvas');
@@ -986,26 +1282,24 @@
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const statusBox = document.getElementById('decode-header-status');
             const keyWrapper = document.getElementById('decode-key-wrapper');
-            const gamePanel = document.getElementById('decode-game-panel');
+            const gamePanel = document.getElementById('img-game-panel');
             const decodeBtn = document.getElementById('btn-decode-process');
 
             try {
-                detectedHeaderInfo = extractHeaderFromImageData(imageData);
-                isGameRequirementCleared = (detectedHeaderInfo.requiredGameLevel === 0);
+                imgDetectedHeaderInfo = extractHeaderFromImageData(imageData);
+                isImgGameRequirementCleared = (imgDetectedHeaderInfo.requiredGameLevel === 0);
 
-                let statusHTML = `<div class="text-emerald-400 font-semibold flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4"></i> Stego Header Detected!</div>`;
-                statusHTML += `<div>Cipher Mode: <span class="text-cyber-neonCyan font-bold">${detectedHeaderInfo.cipherType}</span></div>`;
-                statusHTML += `<div>Payload Size: <span class="text-white">${detectedHeaderInfo.payloadLength} bytes</span></div>`;
-                
-                if (detectedHeaderInfo.requiredGameLevel > 0) {
-                    statusHTML += `<div class="text-amber-400 font-bold flex items-center gap-1 mt-1"><i data-lucide="gamepad-2" class="w-3.5 h-3.5"></i> Game Challenge Lock: ${detectedHeaderInfo.requiredGameLevel} Rounds Required</div>`;
+                let statusHTML = `<div class="text-emerald-400 font-semibold"><i data-lucide="shield-check" class="w-4 h-4 inline mr-1"></i> Stego Header Found!</div>`;
+                statusHTML += `<div>Cipher: <span class="text-cyber-neonCyan font-bold">${imgDetectedHeaderInfo.cipherType}</span></div>`;
+                statusHTML += `<div>Payload Size: <span class="text-white">${imgDetectedHeaderInfo.payloadLength} bytes</span></div>`;
+
+                if (imgDetectedHeaderInfo.requiredGameLevel > 0) {
+                    statusHTML += `<div class="text-amber-400 font-bold mt-1"><i data-lucide="gamepad-2" class="w-3.5 h-3.5 inline mr-1"></i> Required Game Lock: ${imgDetectedHeaderInfo.requiredGameLevel} Rounds</div>`;
                     gamePanel.classList.remove('hidden');
                     gamePanel.classList.add('flex');
-                    document.getElementById('game-required-level').innerText = detectedHeaderInfo.requiredGameLevel;
-                    document.getElementById('game-current-level').innerText = "0";
-                    document.getElementById('game-status-text').innerText = `BEAT LEVEL ${detectedHeaderInfo.requiredGameLevel} TO UNLOCK DECRYPTION`;
+                    document.getElementById('img-game-required').innerText = imgDetectedHeaderInfo.requiredGameLevel;
+                    document.getElementById('img-game-current').innerText = "0";
                 } else {
-                    statusHTML += `<div class="text-slate-400 mt-1">Game Lock: <span class="text-slate-500">None</span></div>`;
                     gamePanel.classList.add('hidden');
                     gamePanel.classList.remove('flex');
                 }
@@ -1013,22 +1307,13 @@
                 statusBox.innerHTML = statusHTML;
                 lucide.createIcons();
 
-                if (detectedHeaderInfo.cipherType !== 'NONE') {
-                    keyWrapper.classList.remove('hidden');
-                } else {
-                    keyWrapper.classList.add('hidden');
-                }
+                if (imgDetectedHeaderInfo.cipherType !== 'NONE') keyWrapper.classList.remove('hidden');
+                else keyWrapper.classList.add('hidden');
 
-                if (isGameRequirementCleared) {
-                    decodeBtn.disabled = false;
-                } else {
-                    decodeBtn.disabled = true;
-                }
-
-                showToast('Stego header successfully scanned', 'success');
+                decodeBtn.disabled = !isImgGameRequirementCleared;
+                showToast('Stego header successfully read', 'success');
 
             } catch (err) {
-                console.error(err);
                 statusBox.innerHTML = `<div class="text-rose-400 font-semibold"><i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i> ${err.message}</div>`;
                 lucide.createIcons();
                 keyWrapper.classList.add('hidden');
@@ -1038,27 +1323,17 @@
             }
         }
 
-        async function processDecodeDirect() {
-            if (!decodeLoadedImage || !detectedHeaderInfo) {
-                showToast('Please upload a stego image', 'error');
-                return;
-            }
-
-            if (!isGameRequirementCleared && detectedHeaderInfo.requiredGameLevel > 0) {
-                showToast(`Must complete ${detectedHeaderInfo.requiredGameLevel} memory game rounds first!`, 'error');
-                return;
-            }
+        async function processImageDecode() {
+            if (!decodeLoadedImage || !imgDetectedHeaderInfo) return;
 
             const key = document.getElementById('decode-key').value;
-            if (detectedHeaderInfo.cipherType !== 'NONE' && !key) {
-                showToast(`Passphrase key required for ${detectedHeaderInfo.cipherType} cipher!`, 'error');
+            if (imgDetectedHeaderInfo.cipherType !== 'NONE' && !key) {
+                showToast('Passphrase key is required!', 'error');
                 return;
             }
 
             const btn = document.getElementById('btn-decode-process');
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Decrypting...`;
-            lucide.createIcons();
 
             try {
                 const canvas = document.createElement('canvas');
@@ -1068,96 +1343,244 @@
                 ctx.drawImage(decodeLoadedImage, 0, 0);
 
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const extractedBytes = extractPayloadBytesFromImageData(imageData, detectedHeaderInfo.payloadLength);
+                const extractedBytes = extractPayloadBytesFromImageData(imageData, imgDetectedHeaderInfo.payloadLength);
 
                 let decryptedBytes;
-                if (detectedHeaderInfo.cipherType === 'NONE') {
-                    decryptedBytes = extractedBytes;
-                } else if (detectedHeaderInfo.cipherType === 'XOR') {
-                    decryptedBytes = xorEncryptDecrypt(extractedBytes, key);
-                } else if (detectedHeaderInfo.cipherType === 'VIGENERE') {
-                    decryptedBytes = vigenereCipher(extractedBytes, key, true);
-                } else if (detectedHeaderInfo.cipherType === 'AES-GCM') {
-                    decryptedBytes = await aesGcmDecrypt(extractedBytes, key);
-                }
+                if (imgDetectedHeaderInfo.cipherType === 'NONE') decryptedBytes = extractedBytes;
+                else if (imgDetectedHeaderInfo.cipherType === 'XOR') decryptedBytes = xorEncryptDecrypt(extractedBytes, key);
+                else if (imgDetectedHeaderInfo.cipherType === 'VIGENERE') decryptedBytes = vigenereCipher(extractedBytes, key, true);
+                else if (imgDetectedHeaderInfo.cipherType === 'AES-GCM') decryptedBytes = await aesGcmDecrypt(extractedBytes, key);
 
                 const plaintext = new TextDecoder().decode(decryptedBytes);
-                document.getElementById('decode-output-text').innerText = plaintext;
+                document.getElementById('img-decode-output').innerText = plaintext;
                 showToast('Payload decrypted successfully!', 'success');
 
             } catch (err) {
-                console.error(err);
-                document.getElementById('decode-output-text').innerText = `[DECRYPTION ERROR / BAD KEY]\nReason: ${err.message}`;
-                showToast(`Decryption Failed: ${err.message}`, 'error');
+                document.getElementById('img-decode-output').innerText = `[DECRYPTION ERROR / WRONG KEY]\n${err.message}`;
+                showToast(`Decryption Error: ${err.message}`, 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i data-lucide="key-round" class="w-4 h-4"></i><span>Extract & Decrypt Payload</span>`;
-                lucide.createIcons();
             }
         }
 
         // =========================================================================
-        // INTERACTIVE MEMORY PATTERN GAME ENGINE
+        // TEXT STEGANOGRAPHY WORKFLOW & LOGIC
+        // =========================================================================
+        async function processTextEncode() {
+            const secretMsg = document.getElementById('txt-secret-input').value.trim();
+            if (!secretMsg) {
+                showToast('Please enter a secret text message', 'error');
+                return;
+            }
+
+            const coverText = document.getElementById('txt-cover-input').value || "Important message update";
+            const stegoMode = document.getElementById('txt-stego-mode').value;
+            const cipherType = document.getElementById('txt-cipher-type').value;
+            const key = document.getElementById('txt-encode-key').value;
+
+            if (cipherType !== 'NONE' && !key) {
+                showToast(`Passphrase key required for ${cipherType} cipher`, 'error');
+                return;
+            }
+
+            const isGameLocked = document.getElementById('txt-game-lock-toggle').checked;
+            const requiredRounds = isGameLocked ? parseInt(document.getElementById('txt-game-rounds').value, 10) : 0;
+
+            try {
+                let rawPayload = new TextEncoder().encode(secretMsg);
+                let encryptedPayload;
+
+                if (cipherType === 'NONE') encryptedPayload = rawPayload;
+                else if (cipherType === 'XOR') encryptedPayload = xorEncryptDecrypt(rawPayload, key);
+                else if (cipherType === 'VIGENERE') encryptedPayload = vigenereCipher(rawPayload, key, false);
+                else if (cipherType === 'AES-GCM') encryptedPayload = await aesGcmEncrypt(rawPayload, key);
+
+                const fullBytes = packStegoBuffer(cipherType, requiredRounds, encryptedPayload);
+
+                let finalStegoText = '';
+                if (stegoMode === 'ZERO_WIDTH') {
+                    const zwPayload = bytesToZeroWidth(fullBytes);
+                    finalStegoText = coverText + zwPayload;
+                } else {
+                    // Ciphertext Armor Mode (Base64 wrapper with header tag)
+                    const base64Str = btoa(String.fromCharCode(...fullBytes));
+                    finalStegoText = `-----BEGIN STEGANOCRYPT VAULT-----\n${base64Str}\n-----END STEGANOCRYPT VAULT-----`;
+                }
+
+                document.getElementById('txt-encode-output').innerText = finalStegoText;
+                showToast('Text payload generated successfully!', 'success');
+
+            } catch (err) {
+                showToast(`Text Encoding Error: ${err.message}`, 'error');
+            }
+        }
+
+        let txtDetectedHeaderInfo = null;
+        let isTxtGameRequirementCleared = false;
+        let txtFullPayloadBytes = null;
+
+        function inspectTextHeader() {
+            const input = document.getElementById('txt-decode-input').value;
+            if (!input) {
+                showToast('Please paste stego text or ciphertext first', 'error');
+                return;
+            }
+
+            const statusBox = document.getElementById('txt-decode-status');
+            const keyWrapper = document.getElementById('txt-decode-key-wrapper');
+            const gamePanel = document.getElementById('txt-game-panel');
+            const decodeBtn = document.getElementById('btn-txt-decode-process');
+
+            try {
+                let extractedBytes = null;
+
+                if (input.includes('-----BEGIN STEGANOCRYPT VAULT-----')) {
+                    // Base64 Armor Mode
+                    const base64Match = input.match(/-----BEGIN STEGANOCRYPT VAULT-----\s*([A-Za-z0-9+/=\s]+)\s*-----END STEGANOCRYPT VAULT-----/);
+                    if (!base64Match) throw new Error("Corrupted ciphertext armor");
+                    const rawStr = atob(base64Match[1].replace(/\s/g, ''));
+                    extractedBytes = new Uint8Array(rawStr.length);
+                    for (let i = 0; i < rawStr.length; i++) extractedBytes[i] = rawStr.charCodeAt(i);
+                } else {
+                    // Zero-Width Mode Extraction
+                    extractedBytes = zeroWidthToBytes(input);
+                }
+
+                txtFullPayloadBytes = extractedBytes;
+                txtDetectedHeaderInfo = unpackStegoBuffer(extractedBytes);
+                isTxtGameRequirementCleared = (txtDetectedHeaderInfo.requiredGameLevel === 0);
+
+                let statusHTML = `<div class="text-emerald-400 font-semibold"><i data-lucide="shield-check" class="w-4 h-4 inline mr-1"></i> Stego Text Payload Found!</div>`;
+                statusHTML += `<div>Cipher: <span class="text-cyber-neonPink font-bold">${txtDetectedHeaderInfo.cipherType}</span></div>`;
+                statusHTML += `<div>Payload Size: <span class="text-white">${txtDetectedHeaderInfo.payloadLength} bytes</span></div>`;
+
+                if (txtDetectedHeaderInfo.requiredGameLevel > 0) {
+                    statusHTML += `<div class="text-amber-400 font-bold mt-1"><i data-lucide="gamepad-2" class="w-3.5 h-3.5 inline mr-1"></i> Game Lock Active: ${txtDetectedHeaderInfo.requiredGameLevel} Rounds</div>`;
+                    gamePanel.classList.remove('hidden');
+                    gamePanel.classList.add('flex');
+                    document.getElementById('txt-game-required').innerText = txtDetectedHeaderInfo.requiredGameLevel;
+                    document.getElementById('txt-game-current').innerText = "0";
+                } else {
+                    gamePanel.classList.add('hidden');
+                    gamePanel.classList.remove('flex');
+                }
+
+                statusBox.innerHTML = statusHTML;
+                lucide.createIcons();
+
+                if (txtDetectedHeaderInfo.cipherType !== 'NONE') keyWrapper.classList.remove('hidden');
+                else keyWrapper.classList.add('hidden');
+
+                decodeBtn.disabled = !isTxtGameRequirementCleared;
+                showToast('Text stego header verified', 'success');
+
+            } catch (err) {
+                statusBox.innerHTML = `<div class="text-rose-400 font-semibold"><i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i> ${err.message}</div>`;
+                lucide.createIcons();
+                keyWrapper.classList.add('hidden');
+                gamePanel.classList.add('hidden');
+                decodeBtn.disabled = true;
+                showToast(`Scan Error: ${err.message}`, 'error');
+            }
+        }
+
+        async function processTextDecode() {
+            if (!txtDetectedHeaderInfo || !txtDetectedHeaderInfo.encryptedPayload) return;
+
+            const key = document.getElementById('txt-decode-key').value;
+            if (txtDetectedHeaderInfo.cipherType !== 'NONE' && !key) {
+                showToast('Passphrase key is required!', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btn-txt-decode-process');
+            btn.disabled = true;
+
+            try {
+                let decryptedBytes;
+                const encryptedBytes = txtDetectedHeaderInfo.encryptedPayload;
+
+                if (txtDetectedHeaderInfo.cipherType === 'NONE') decryptedBytes = encryptedBytes;
+                else if (txtDetectedHeaderInfo.cipherType === 'XOR') decryptedBytes = xorEncryptDecrypt(encryptedBytes, key);
+                else if (txtDetectedHeaderInfo.cipherType === 'VIGENERE') decryptedBytes = vigenereCipher(encryptedBytes, key, true);
+                else if (txtDetectedHeaderInfo.cipherType === 'AES-GCM') decryptedBytes = await aesGcmDecrypt(encryptedBytes, key);
+
+                const plaintext = new TextDecoder().decode(decryptedBytes);
+                document.getElementById('txt-decode-output').innerText = plaintext;
+                showToast('Text payload decrypted successfully!', 'success');
+
+            } catch (err) {
+                document.getElementById('txt-decode-output').innerText = `[DECRYPTION ERROR / WRONG KEY]\n${err.message}`;
+                showToast(`Decryption Error: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // =========================================================================
+        // MEMORY GAME ENGINE
         // =========================================================================
         let gameSequence = [];
         let playerSequence = [];
         let gameCurrentLevel = 0;
         let isPlayingSequence = false;
         let isGameActive = false;
+        let activeGameTarget = 'image'; // 'image' or 'text'
 
         const padFrequencies = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33];
 
         function flashPad(padIndex, duration = 300) {
-            const pad = document.getElementById(`pad-${padIndex}`);
+            const prefix = activeGameTarget === 'image' ? 'pad-' : 'tpad-';
+            const pad = document.getElementById(`${prefix}${padIndex}`);
             if (!pad) return;
             pad.classList.add('simon-active');
             playSynthesizedSound(padFrequencies[padIndex], 'sine', duration / 1000);
-            setTimeout(() => {
-                pad.classList.remove('simon-active');
-            }, duration);
+            setTimeout(() => pad.classList.remove('simon-active'), duration);
         }
 
-        function startGameChallenge() {
-            if (!detectedHeaderInfo) return;
+        function startGameChallenge(targetMode = 'image') {
+            activeGameTarget = targetMode;
+            const targetHeader = targetMode === 'image' ? imgDetectedHeaderInfo : txtDetectedHeaderInfo;
+            if (!targetHeader) return;
 
             gameSequence = [];
             playerSequence = [];
             gameCurrentLevel = 1;
             isGameActive = true;
 
-            document.getElementById('game-status-text').innerText = 'MEMORIZE PATTERN';
-            document.getElementById('game-status-text').className = 'text-sm font-bold text-amber-400 mb-4';
-            document.getElementById('game-current-level').innerText = '1';
+            const statusId = targetMode === 'image' ? 'img-game-status' : 'txt-game-status';
+            const currentId = targetMode === 'image' ? 'img-game-current' : 'txt-game-current';
 
-            nextRound();
+            document.getElementById(statusId).innerText = 'MEMORIZE PATTERN';
+            document.getElementById(currentId).innerText = '1';
+
+            nextGameRound();
         }
 
-        function nextRound() {
+        function nextGameRound() {
             playerSequence = [];
             const randomTile = Math.floor(Math.random() * 9);
             gameSequence.push(randomTile);
-
-            playSequence();
+            playGameSequence();
         }
 
-        async function playSequence() {
+        async function playGameSequence() {
             isPlayingSequence = true;
-            document.getElementById('game-status-text').innerText = 'WATCH PATTERN...';
-            document.getElementById('game-status-text').className = 'text-sm font-bold text-amber-400 mb-4';
+            const statusId = activeGameTarget === 'image' ? 'img-game-status' : 'txt-game-status';
+            document.getElementById(statusId).innerText = 'WATCH PATTERN...';
 
-            await new Promise(res => setTimeout(res, 500));
+            await new Promise(res => setTimeout(res, 400));
 
             for (let i = 0; i < gameSequence.length; i++) {
-                flashPad(gameSequence[i], 350);
-                await new Promise(res => setTimeout(res, 480));
+                flashPad(gameSequence[i], 320);
+                await new Promise(res => setTimeout(res, 450));
             }
 
             isPlayingSequence = false;
-            document.getElementById('game-status-text').innerText = 'REPEAT PATTERN!';
-            document.getElementById('game-status-text').className = 'text-sm font-bold text-cyber-neonCyan animate-pulse mb-4';
+            document.getElementById(statusId).innerText = 'REPEAT PATTERN!';
         }
 
-        function handlePadClick(padIndex) {
+        function handleGamePadClick(padIndex) {
             if (!isGameActive || isPlayingSequence) return;
 
             flashPad(padIndex, 200);
@@ -1166,47 +1589,53 @@
             const currentIndex = playerSequence.length - 1;
 
             if (playerSequence[currentIndex] !== gameSequence[currentIndex]) {
-                // Wrong sequence
+                // Wrong tile pressed
                 playSynthesizedSound(120, 'sawtooth', 0.4);
-                document.getElementById('game-status-text').innerText = 'WRONG PATTERN! TRY AGAIN';
-                document.getElementById('game-status-text').className = 'text-sm font-bold text-rose-500 mb-4';
+                const statusId = activeGameTarget === 'image' ? 'img-game-status' : 'txt-game-status';
+                document.getElementById(statusId).innerText = 'WRONG! CLICK START TO RETRY';
                 isGameActive = false;
-                showToast('Pattern failed! Click Start Challenge to retry.', 'error');
+                showToast('Pattern failed! Click Start to retry.', 'error');
                 return;
             }
 
-            // Check if step round completed
             if (playerSequence.length === gameSequence.length) {
-                if (gameCurrentLevel >= detectedHeaderInfo.requiredGameLevel) {
-                    // Challenge Won!
+                const targetHeader = activeGameTarget === 'image' ? imgDetectedHeaderInfo : txtDetectedHeaderInfo;
+                if (gameCurrentLevel >= targetHeader.requiredGameLevel) {
                     handleGameVictory();
                 } else {
                     gameCurrentLevel++;
-                    document.getElementById('game-current-level').innerText = gameCurrentLevel;
-                    setTimeout(nextRound, 700);
+                    const currentId = activeGameTarget === 'image' ? 'img-game-current' : 'txt-game-current';
+                    document.getElementById(currentId).innerText = gameCurrentLevel;
+                    setTimeout(nextGameRound, 600);
                 }
             }
         }
 
         function handleGameVictory() {
             isGameActive = false;
-            isGameRequirementCleared = true;
 
-            document.getElementById('game-status-text').innerText = 'GAME LOCK CLEARED! UNLOCKED';
-            document.getElementById('game-status-text').className = 'text-sm font-bold text-emerald-400 mb-4';
+            if (activeGameTarget === 'image') {
+                isImgGameRequirementCleared = true;
+                document.getElementById('img-game-status').innerText = 'VICTORY! UNLOCKED';
+                document.getElementById('btn-decode-process').disabled = false;
+            } else {
+                isTxtGameRequirementCleared = true;
+                document.getElementById('txt-game-status').innerText = 'VICTORY! UNLOCKED';
+                document.getElementById('btn-txt-decode-process').disabled = false;
+            }
 
             playSynthesizedSound(523.25, 'triangle', 0.18);
             setTimeout(() => playSynthesizedSound(659.25, 'triangle', 0.18), 150);
             setTimeout(() => playSynthesizedSound(783.99, 'triangle', 0.3), 300);
 
-            document.getElementById('btn-decode-process').disabled = false;
-            showToast('Game challenge cleared! Decryption key input is now unlocked.', 'success');
+            showToast('Game challenge completed! Passphrase unlock enabled.', 'success');
         }
 
-        // Initialize icons and UI state on load
+        // Initialize icons and bindings on DOM load
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             toggleCipherKeyInput('encode');
+            toggleCipherKeyInput('txt-encode');
         });
     </script>
 </body>
