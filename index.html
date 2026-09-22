@@ -6,12 +6,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#07090e">
-    <title>SteganoCrypt Studio v4.0 | iOS Compatible</title>
+    <title>SteganoCrypt Studio v4.0</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.454.0/dist/umd/lucide.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -302,10 +302,17 @@
                             <canvas id="encode-output-canvas" class="max-h-[160px] max-w-full rounded border border-slate-800 object-contain"></canvas>
                         </div>
 
-                        <a id="download-stego-btn" download="stego-vault.png" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer active:scale-[0.98]">
-                            <i data-lucide="download" class="w-4 h-4"></i>
-                            <span>Save / Download PNG</span>
-                        </a>
+                        <div class="flex flex-col gap-2.5">
+                            <button id="share-stego-btn" onclick="shareStegoImage()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyber-neonPurple to-cyber-neonCyan hover:brightness-110 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20 transition-all cursor-pointer active:scale-[0.98]">
+                                <i data-lucide="share" class="w-4 h-4"></i>
+                                <span>Share / Save to Photos</span>
+                            </button>
+                            <a id="download-stego-btn" download="stego-vault.png" class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium text-xs flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98]">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <span>Download PNG (Desktop)</span>
+                            </a>
+                            <p class="text-[10px] text-slate-500 text-center leading-snug">On iPhone/iPad, "Share" opens the system sheet — pick Messages, WhatsApp, Mail, or "Save Image" to add it straight to Photos.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -531,9 +538,15 @@
                         <div id="txt-encode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-3 font-mono text-xs sm:text-sm text-pink-300 overflow-y-auto whitespace-pre-wrap break-all min-h-[180px]">
                             <span class="text-slate-600 italic">Generated text payload (containing hidden zero-width Unicode characters or ciphertext) will appear here...</span>
                         </div>
-                        <div class="mt-3 text-[11px] text-slate-400 flex items-center gap-1.5">
-                            <i data-lucide="info" class="w-3.5 h-3.5 text-cyber-neonPink shrink-0"></i>
-                            <span>Copy/paste directly into iMessage, WhatsApp, Discord, or Email!</span>
+                        <div class="mt-3 flex flex-col gap-2.5">
+                            <button id="share-stego-text-btn" onclick="shareStegoText()" class="hidden w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:brightness-110 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-pink-600/20 transition-all active:scale-[0.98]">
+                                <i data-lucide="share" class="w-3.5 h-3.5"></i>
+                                <span>Share to Messages / WhatsApp</span>
+                            </button>
+                            <div class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                                <i data-lucide="info" class="w-3.5 h-3.5 text-cyber-neonPink shrink-0"></i>
+                                <span>Copy/paste directly into iMessage, WhatsApp, Discord, or Email!</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -653,7 +666,6 @@
 
         let audioCtx = null;
 
-        // Specialized Web Audio initialization and unlock for iOS Safari
         function initAndUnlockAudioContext() {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -666,7 +678,6 @@
             }
         }
 
-        // Attach listeners to unlock audio on first touch/tap on iOS Safari
         ['touchstart', 'touchend', 'mousedown', 'keydown'].forEach(evt => {
             window.addEventListener(evt, function unlockAudioOnInteraction() {
                 initAndUnlockAudioContext();
@@ -745,15 +756,100 @@
                 showToast('No payload text available to copy', 'error');
                 return;
             }
-            
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied payload to clipboard!', 'success');
+                }).catch(() => {
+                    legacyCopyFallback(text);
+                });
+            } else {
+                legacyCopyFallback(text);
+            }
+        }
+
+        function legacyCopyFallback(text) {
             const textarea = document.createElement('textarea');
             textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
             document.body.appendChild(textarea);
+            textarea.focus();
             textarea.select();
-            document.execCommand('copy');
+            try {
+                document.execCommand('copy');
+                showToast('Copied payload to clipboard!', 'success');
+            } catch (e) {
+                showToast('Copy failed — select and copy manually', 'error');
+            }
             document.body.removeChild(textarea);
-            
-            showToast('Copied payload to clipboard!', 'success');
+        }
+
+        // =========================================================================
+        // WEB SHARE API (iOS / Android native share sheet — Save to Photos,
+        // Messages, WhatsApp, AirDrop, etc.)
+        // =========================================================================
+        let currentStegoBlob = null;
+
+        async function shareStegoImage() {
+            if (!currentStegoBlob) {
+                showToast('Generate a stego image first', 'error');
+                return;
+            }
+
+            const file = new File([currentStegoBlob], 'stego-vault.png', { type: 'image/png' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'SteganoCrypt Image',
+                        text: 'Encoded stego image'
+                    });
+                    showToast('Shared successfully!', 'success');
+                } catch (err) {
+                    if (err && err.name !== 'AbortError') {
+                        showToast('Share failed, opening image instead', 'error');
+                        openBlobForLongPressSave(currentStegoBlob);
+                    }
+                }
+            } else {
+                openBlobForLongPressSave(currentStegoBlob);
+            }
+        }
+
+        function openBlobForLongPressSave(blob) {
+            const url = URL.createObjectURL(blob);
+            const win = window.open(url, '_blank');
+            if (!win) {
+                const downloadBtn = document.getElementById('download-stego-btn');
+                downloadBtn.click();
+            }
+            showToast('Long-press the image and choose "Save Image" or "Add to Photos"', 'info');
+        }
+
+        async function shareStegoText() {
+            const text = document.getElementById('txt-encode-output').innerText;
+            if (!text || text.includes('will appear here')) {
+                showToast('Generate a stego text payload first', 'error');
+                return;
+            }
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'SteganoCrypt Text',
+                        text: text
+                    });
+                    showToast('Shared successfully!', 'success');
+                } catch (err) {
+                    if (err && err.name !== 'AbortError') {
+                        showToast('Share failed — try copying instead', 'error');
+                    }
+                }
+            } else {
+                copyToClipboard('txt-encode-output');
+            }
         }
 
         // =========================================================================
@@ -1257,9 +1353,17 @@
                 const outCtx = outputCanvas.getContext('2d');
                 outCtx.putImageData(stegoImageData, 0, 0);
 
-                const dataUrl = canvas.toDataURL('image/png');
+                // Build a Blob (rather than relying solely on a data: URL) so the
+                // Web Share API can attach the PNG as a real file on iOS/Android,
+                // and so large images don't hit data-URL size limits in Safari.
+                const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+
                 const downloadBtn = document.getElementById('download-stego-btn');
-                downloadBtn.href = dataUrl;
+                if (downloadBtn.href && downloadBtn.href.startsWith('blob:')) {
+                    URL.revokeObjectURL(downloadBtn.href);
+                }
+                currentStegoBlob = blob;
+                downloadBtn.href = URL.createObjectURL(blob);
 
                 document.getElementById('encode-result-box').classList.remove('hidden');
                 showToast('Stego image generated successfully!', 'success');
@@ -1431,6 +1535,7 @@
                 }
 
                 document.getElementById('txt-encode-output').innerText = finalStegoText;
+                document.getElementById('share-stego-text-btn').classList.remove('hidden');
                 showToast('Text payload generated successfully!', 'success');
 
             } catch (err) {
