@@ -2,8 +2,12 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SteganoCrypt Studio v4.0 | Image & Text Steganography + Game-Gated Vault</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#07090e">
+    <title>SteganoCrypt Studio v4.0 | iOS Compatible</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -32,8 +36,8 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['Fira Code', 'JetBrains Mono', 'monospace']
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['Fira Code', 'Menlo', 'Monaco', 'Consolas', 'monospace']
                     }
                 }
             }
@@ -42,6 +46,13 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap');
         
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+            --sal: env(safe-area-inset-left);
+            --sar: env(safe-area-inset-right);
+        }
+
         body {
             background-color: #07090e;
             color: #f3f4f6;
@@ -50,12 +61,28 @@
                 radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
                 radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
+            padding-top: var(--sat);
+            padding-bottom: var(--sab);
+            padding-left: var(--sal);
+            padding-right: var(--sar);
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        /* Prevent iOS Safari from auto-zooming inputs when focused */
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        textarea,
+        select {
+            font-size: 16px !important;
+            touch-action: manipulation;
         }
 
         .glass-panel {
-            background: rgba(18, 24, 36, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(18, 24, 36, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
@@ -64,12 +91,15 @@
         .glow-pink { box-shadow: 0 0 20px -3px rgba(236, 72, 153, 0.35); }
 
         .simon-btn {
-            transition: all 0.15s ease;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.12s ease;
             transform: scale(1);
         }
 
         .simon-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
         }
 
         .simon-active {
@@ -78,8 +108,8 @@
         }
 
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #0a0d14;
@@ -88,61 +118,59 @@
             background: #1e293b;
             border-radius: 4px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #334155;
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans selection:bg-cyber-500 selection:text-white">
 
-    <!-- Header -->
+    <!-- Navigation Header -->
     <header class="border-b border-cyber-border/60 glass-panel sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
                 <div class="p-2 bg-gradient-to-tr from-cyber-600 via-cyber-neonPurple to-cyber-neonCyan rounded-xl text-white shadow-lg shadow-cyber-500/20">
-                    <i data-lucide="shield-lock" class="w-6 h-6"></i>
+                    <i data-lucide="shield-lock" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-cyber-neonCyan bg-clip-text text-transparent flex items-center gap-2">
-                        SteganoCrypt <span class="text-xs px-2 py-0.5 rounded-full bg-cyber-500/20 text-cyber-400 border border-cyber-500/30">Studio v4.0</span>
+                    <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-cyber-neonCyan bg-clip-text text-transparent flex items-center gap-1.5">
+                        SteganoCrypt <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-cyber-500/20 text-cyber-400 border border-cyber-500/30">iOS v4.0</span>
                     </h1>
-                    <p class="text-xs text-slate-400 hidden sm:block">Image LSB & Zero-Width Text Steganography with Game Vault</p>
                 </div>
             </div>
 
-            <!-- Primary Mode Tabs (Image Steganography vs Text Steganography) -->
+            <!-- Primary Mode Tabs -->
             <div class="flex p-1 bg-slate-900/90 rounded-xl border border-slate-800">
-                <button id="mode-image-btn" onclick="switchPrimaryMode('image')" class="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-cyber-600 text-white shadow">
-                    <i data-lucide="image" class="w-4 h-4"></i>
-                    <span>Image Steganography</span>
+                <button id="mode-image-btn" onclick="switchPrimaryMode('image')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-cyber-600 text-white shadow">
+                    <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Image Steganography</span>
+                    <span class="sm:hidden">Image</span>
                 </button>
-                <button id="mode-text-btn" onclick="switchPrimaryMode('text')" class="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white transition-all duration-200">
-                    <i data-lucide="file-text" class="w-4 h-4"></i>
-                    <span>Text Steganography</span>
+                <button id="mode-text-btn" onclick="switchPrimaryMode('text')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all duration-200">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Text Steganography</span>
+                    <span class="sm:hidden">Text</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-6 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
 
     <!-- Main Workspace -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 flex flex-col gap-6">
 
         <!-- =================================================================== -->
         <!-- SECTION 1: IMAGE STEGANOGRAPHY WORKSPACE -->
         <!-- =================================================================== -->
         <div id="workspace-image" class="flex flex-col gap-6">
             
-            <!-- Secondary Navigation: Encode vs Decode -->
+            <!-- Secondary Navigation -->
             <div class="flex justify-center">
-                <div class="flex p-1 bg-slate-900/80 rounded-xl border border-slate-800">
-                    <button id="img-tab-encode" onclick="switchImageTab('encode')" class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-600 text-white shadow">
+                <div class="flex p-1 bg-slate-900/80 rounded-xl border border-slate-800 w-full sm:w-auto">
+                    <button id="img-tab-encode" onclick="switchImageTab('encode')" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-cyber-600 text-white shadow">
                         <i data-lucide="lock" class="w-4 h-4"></i>
                         <span>Encode Image</span>
                     </button>
-                    <button id="img-tab-decode" onclick="switchImageTab('decode')" class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white">
+                    <button id="img-tab-decode" onclick="switchImageTab('decode')" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white">
                         <i data-lucide="unlock" class="w-4 h-4"></i>
                         <span>Decode Image</span>
                     </button>
@@ -152,49 +180,50 @@
             <!-- Image Encode Panel -->
             <div id="img-panel-encode" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-7 flex flex-col gap-6">
-                    <!-- Step 1: Image Upload -->
-                    <div class="glass-panel p-5 rounded-2xl">
-                        <div class="flex items-center justify-between mb-4">
+                    <!-- Step 1: Upload -->
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl">
+                        <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <span class="w-6 h-6 rounded-full bg-cyber-500/20 text-cyber-400 flex items-center justify-center text-xs font-bold border border-cyber-500/30">1</span>
-                                <h2 class="text-base font-semibold text-white">Select Carrier Image</h2>
+                                <h2 class="text-sm sm:text-base font-semibold text-white">Select Carrier Image</h2>
                             </div>
-                            <span id="encode-img-info" class="text-xs text-slate-400 font-mono">No image loaded</span>
+                            <span id="encode-img-info" class="text-xs text-slate-400 font-mono truncate max-w-[150px]">No image</span>
                         </div>
-                        <div id="encode-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyber-500 transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-slate-900/40">
-                            <input type="file" id="encode-file-input" accept="image/png, image/jpeg, image/webp, image/bmp" class="hidden">
-                            <div class="p-3 bg-slate-800/80 rounded-full text-cyber-400 mb-3 group-hover:scale-110 transition-transform">
-                                <i data-lucide="image-plus" class="w-8 h-8"></i>
+                        <div id="encode-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyber-500 transition-colors rounded-xl p-5 flex flex-col items-center justify-center text-center cursor-pointer bg-slate-900/40">
+                            <!-- Native iOS Photo Library & Camera Picker -->
+                            <input type="file" id="encode-file-input" accept="image/*" class="hidden">
+                            <div class="p-3 bg-slate-800/80 rounded-full text-cyber-400 mb-2">
+                                <i data-lucide="image-plus" class="w-7 h-7"></i>
                             </div>
-                            <p class="text-sm font-medium text-slate-200">Click to upload or drag & drop</p>
-                            <p class="text-xs text-slate-400 mt-1">PNG, JPEG, WEBP or BMP (Lossless PNG recommended)</p>
+                            <p class="text-xs sm:text-sm font-medium text-slate-200">Tap to select photo from iOS Library or Camera</p>
+                            <p class="text-[11px] text-slate-400 mt-1">PNG, JPEG, WEBP or BMP</p>
                         </div>
                     </div>
 
-                    <!-- Step 2: Secret Payload & Encryption -->
-                    <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
+                    <!-- Step 2: Payload -->
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl flex flex-col gap-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="w-6 h-6 rounded-full bg-cyber-500/20 text-cyber-400 flex items-center justify-center text-xs font-bold border border-cyber-500/30">2</span>
-                                <h2 class="text-base font-semibold text-white">Payload & Multi-Cipher Security</h2>
+                                <h2 class="text-sm sm:text-base font-semibold text-white">Secret Payload & Cipher</h2>
                             </div>
                             <div id="capacity-container" class="hidden items-center gap-2">
-                                <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                                <div class="w-20 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
                                     <div id="capacity-bar" class="bg-cyber-neonCyan h-full w-0 transition-all duration-300"></div>
                                 </div>
-                                <span id="capacity-text" class="text-xs font-mono text-slate-400">0 / 0 bytes</span>
+                                <span id="capacity-text" class="text-[11px] font-mono text-slate-400">0 B</span>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1">Secret Payload</label>
-                            <textarea id="encode-message" rows="4" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-500 font-mono resize-none" placeholder="Enter secret message to hide inside image pixels..."></textarea>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Secret Text Payload</label>
+                            <textarea id="encode-message" rows="3" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-500 font-mono resize-none" placeholder="Enter secret message to hide inside image pixels..."></textarea>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-medium text-slate-300 mb-1">Encryption Cipher</label>
-                                <select id="encode-cipher-type" onchange="toggleCipherKeyInput('encode')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyber-500">
+                                <select id="encode-cipher-type" onchange="toggleCipherKeyInput('encode')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyber-500">
                                     <option value="NONE">None / Plaintext</option>
                                     <option value="XOR">XOR Cipher</option>
                                     <option value="VIGENERE" selected>Vigenère Cipher</option>
@@ -204,8 +233,8 @@
                             <div id="encode-key-wrapper">
                                 <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase / Key</label>
                                 <div class="relative">
-                                    <input type="password" id="encode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyber-500 font-mono" placeholder="Encryption key">
-                                    <button type="button" onclick="togglePasswordVisibility('encode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                    <input type="password" id="encode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyber-500 font-mono" placeholder="Encryption key">
+                                    <button type="button" onclick="togglePasswordVisibility('encode-key', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                     </button>
                                 </div>
@@ -213,16 +242,16 @@
                         </div>
 
                         <!-- Game Lock Option -->
-                        <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl flex flex-col gap-3">
+                        <div class="p-3.5 bg-slate-900/70 border border-slate-800 rounded-xl flex flex-col gap-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple"></i>
+                                    <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple shrink-0"></i>
                                     <div>
-                                        <h3 class="text-sm font-semibold text-white">Require Memory Game Challenge</h3>
-                                        <p class="text-xs text-slate-400">Lock payload until receiver beats required Simon game rounds</p>
+                                        <h3 class="text-xs sm:text-sm font-semibold text-white">Require Simon Game Challenge</h3>
+                                        <p class="text-[11px] text-slate-400">Lock payload until receiver beats required game rounds</p>
                                     </div>
                                 </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
+                                <label class="relative inline-flex items-center cursor-pointer shrink-0">
                                     <input type="checkbox" id="encode-game-lock-toggle" onchange="toggleGameLockOption('encode')" class="sr-only peer">
                                     <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyber-neonPurple"></div>
                                 </label>
@@ -233,49 +262,49 @@
                                     <label class="block text-xs font-medium text-slate-300 mb-1">Required Game Rounds</label>
                                     <input type="number" id="encode-game-rounds" min="1" max="20" value="5" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyber-neonPurple">
                                 </div>
-                                <div class="flex items-center text-xs text-slate-400 pt-4">
-                                    <i data-lucide="info" class="w-4 h-4 text-cyber-neonPurple inline shrink-0 mr-1.5"></i>
-                                    Round requirement is embedded directly into binary header metadata.
+                                <div class="flex items-center text-[11px] text-slate-400 sm:pt-4">
+                                    <i data-lucide="info" class="w-4 h-4 text-cyber-neonPurple inline shrink-0 mr-1"></i>
+                                    Embedded into metadata header.
                                 </div>
                             </div>
                         </div>
 
-                        <button id="btn-encode-process" onclick="processImageEncode()" disabled class="w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyber-600 via-cyber-neonPurple to-cyber-neonCyan hover:brightness-110 text-white shadow-lg shadow-cyber-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button id="btn-encode-process" onclick="processImageEncode()" disabled class="w-full mt-1 py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyber-600 via-cyber-neonPurple to-cyber-neonCyan hover:brightness-110 text-white shadow-lg shadow-cyber-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]">
                             <i data-lucide="cpu" class="w-4 h-4"></i>
                             <span>Embed & Generate Stego Image</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Preview & Result Output -->
+                <!-- Preview & Download Output -->
                 <div class="lg:col-span-5 flex flex-col gap-6">
-                    <div class="glass-panel p-5 rounded-2xl flex flex-col items-center justify-center min-h-[260px] relative overflow-hidden">
-                        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 w-full flex justify-between items-center">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl flex flex-col items-center justify-center min-h-[220px] relative overflow-hidden">
+                        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 w-full flex justify-between items-center">
                             <span>Carrier Image Preview</span>
                             <span id="encode-resolution-badge" class="normal-case text-slate-500 font-mono"></span>
                         </h3>
-                        <div id="encode-preview-placeholder" class="text-center text-slate-600 py-12">
-                            <i data-lucide="file-image" class="w-16 h-16 mx-auto mb-2 opacity-40"></i>
+                        <div id="encode-preview-placeholder" class="text-center text-slate-600 py-8">
+                            <i data-lucide="file-image" class="w-12 h-12 mx-auto mb-2 opacity-40"></i>
                             <p class="text-xs">No image loaded yet</p>
                         </div>
-                        <img id="encode-preview-img" class="hidden max-h-[280px] w-auto rounded-lg object-contain shadow-md" alt="Carrier preview">
+                        <img id="encode-preview-img" class="hidden max-h-[240px] w-auto rounded-lg object-contain shadow-md" alt="Carrier preview">
                     </div>
 
-                    <div id="encode-result-box" class="glass-panel p-5 rounded-2xl hidden border-cyber-500/40 glow-indigo">
+                    <div id="encode-result-box" class="glass-panel p-4 sm:p-5 rounded-2xl hidden border-cyber-500/40 glow-indigo">
                         <div class="flex items-center gap-2 mb-2 text-emerald-400">
                             <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                            <h3 class="font-bold text-sm text-white">Stego-Image Generated!</h3>
+                            <h3 class="font-bold text-sm text-white">Stego-Image Ready!</h3>
                         </div>
-                        <p class="text-xs text-slate-300 mb-4">Payload concealed inside pixel LSB layers.</p>
+                        <p class="text-xs text-slate-300 mb-3">Payload concealed inside pixel LSB layers.</p>
 
-                        <div class="bg-slate-950 p-3 rounded-xl mb-4 border border-slate-800 flex flex-col items-center">
+                        <div class="bg-slate-950 p-2 sm:p-3 rounded-xl mb-3 border border-slate-800 flex flex-col items-center">
                             <span class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-wider">Stego Output Image Canvas</span>
-                            <canvas id="encode-output-canvas" class="max-h-[180px] max-w-full rounded border border-slate-800"></canvas>
+                            <canvas id="encode-output-canvas" class="max-h-[160px] max-w-full rounded border border-slate-800 object-contain"></canvas>
                         </div>
 
-                        <a id="download-stego-btn" download="stego-vault.png" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer">
+                        <a id="download-stego-btn" download="stego-vault.png" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer active:scale-[0.98]">
                             <i data-lucide="download" class="w-4 h-4"></i>
-                            <span>Download Lossless PNG</span>
+                            <span>Save / Download PNG</span>
                         </a>
                     </div>
                 </div>
@@ -284,25 +313,25 @@
             <!-- Image Decode Panel -->
             <div id="img-panel-decode" class="grid grid-cols-1 lg:grid-cols-12 gap-6 hidden">
                 <div class="lg:col-span-5 flex flex-col gap-6">
-                    <div class="glass-panel p-5 rounded-2xl">
-                        <div class="flex items-center gap-2 mb-4">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl">
+                        <div class="flex items-center gap-2 mb-3">
                             <span class="w-6 h-6 rounded-full bg-cyber-neonCyan/20 text-cyber-neonCyan flex items-center justify-center text-xs font-bold border border-cyber-neonCyan/30">1</span>
-                            <h2 class="text-base font-semibold text-white">Upload Stego Image</h2>
+                            <h2 class="text-sm sm:text-base font-semibold text-white">Upload Stego Image</h2>
                         </div>
-                        <div id="decode-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyber-neonCyan transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-slate-900/40">
-                            <input type="file" id="decode-file-input" accept="image/png, image/bmp, image/webp" class="hidden">
-                            <div class="p-3 bg-slate-800/80 rounded-full text-cyber-neonCyan mb-3 group-hover:scale-110 transition-transform">
-                                <i data-lucide="file-search" class="w-8 h-8"></i>
+                        <div id="decode-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyber-neonCyan transition-colors rounded-xl p-5 flex flex-col items-center justify-center text-center cursor-pointer bg-slate-900/40">
+                            <input type="file" id="decode-file-input" accept="image/*" class="hidden">
+                            <div class="p-3 bg-slate-800/80 rounded-full text-cyber-neonCyan mb-2">
+                                <i data-lucide="file-search" class="w-7 h-7"></i>
                             </div>
-                            <p class="text-sm font-medium text-slate-200">Upload Stego Image File</p>
-                            <p class="text-xs text-slate-400 mt-1">Must be lossless PNG/BMP containing header</p>
+                            <p class="text-xs sm:text-sm font-medium text-slate-200">Tap to select Stego Image from Photo Library</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Must be lossless PNG/BMP containing header</p>
                         </div>
                     </div>
 
-                    <div id="decode-setup-card" class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
+                    <div id="decode-setup-card" class="glass-panel p-4 sm:p-5 rounded-2xl flex flex-col gap-4">
                         <div class="flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full bg-cyber-neonCyan/20 text-cyber-neonCyan flex items-center justify-center text-xs font-bold border border-cyber-neonCyan/30">2</span>
-                            <h2 class="text-base font-semibold text-white">Header Scan & Passphrase</h2>
+                            <h2 class="text-sm sm:text-base font-semibold text-white">Header Scan & Key</h2>
                         </div>
 
                         <div id="decode-header-status" class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs flex flex-col gap-1 font-mono">
@@ -312,14 +341,14 @@
                         <div id="decode-key-wrapper" class="hidden">
                             <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase Key</label>
                             <div class="relative">
-                                <input type="password" id="decode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyber-neonCyan" placeholder="Enter key">
-                                <button type="button" onclick="togglePasswordVisibility('decode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                <input type="password" id="decode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyber-neonCyan" placeholder="Enter key">
+                                <button type="button" onclick="togglePasswordVisibility('decode-key', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <button id="btn-decode-process" onclick="processImageDecode()" disabled class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button id="btn-decode-process" onclick="processImageDecode()" disabled class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]">
                             <i data-lucide="key-round" class="w-4 h-4"></i>
                             <span>Extract & Decrypt Payload</span>
                         </button>
@@ -327,60 +356,60 @@
                 </div>
 
                 <div class="lg:col-span-7 flex flex-col gap-6">
-                    <!-- Game Challenge Panel -->
-                    <div id="img-game-panel" class="glass-panel p-6 rounded-2xl hidden flex-col items-center justify-center border-cyber-neonPurple/40 glow-purple">
-                        <div class="w-full flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                    <!-- Image Game Challenge Panel -->
+                    <div id="img-game-panel" class="glass-panel p-5 rounded-2xl hidden flex-col items-center justify-center border-cyber-neonPurple/40 glow-purple">
+                        <div class="w-full flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
                             <div class="flex items-center gap-2">
-                                <i data-lucide="gamepad-2" class="w-6 h-6 text-cyber-neonPurple"></i>
+                                <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple"></i>
                                 <div>
-                                    <h3 class="font-bold text-base text-white">Game Lock Active!</h3>
-                                    <p class="text-xs text-slate-400">Clear pattern sequence to unlock decryption</p>
+                                    <h3 class="font-bold text-sm text-white">Game Lock Active!</h3>
+                                    <p class="text-[11px] text-slate-400">Clear pattern sequence to unlock decryption</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-3">
                                 <div class="text-right">
-                                    <span class="text-xs text-slate-400 block">CURRENT</span>
-                                    <span id="img-game-current" class="text-xl font-bold font-mono text-white">0</span>
+                                    <span class="text-[10px] text-slate-400 block">CURRENT</span>
+                                    <span id="img-game-current" class="text-lg font-bold font-mono text-white">0</span>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xs text-slate-400 block font-semibold">REQUIRED</span>
-                                    <span id="img-game-required" class="text-xl font-bold font-mono text-cyber-neonPurple">0</span>
+                                    <span class="text-[10px] text-slate-400 block font-semibold">REQUIRED</span>
+                                    <span id="img-game-required" class="text-lg font-bold font-mono text-cyber-neonPurple">0</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="img-game-status" class="text-sm font-bold text-cyber-neonPurple mb-4">PRESS START CHALLENGE</div>
+                        <div id="img-game-status" class="text-xs font-bold text-cyber-neonPurple mb-3">TAP START CHALLENGE</div>
 
-                        <div class="grid grid-cols-3 gap-3 w-full max-w-[280px] aspect-square p-3 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-2xl my-2">
-                            <button onclick="handleGamePadClick(0)" id="pad-0" class="simon-btn bg-rose-950/60 border-2 border-rose-600/40 rounded-xl text-rose-500 font-bold text-lg flex items-center justify-center">1</button>
-                            <button onclick="handleGamePadClick(1)" id="pad-1" class="simon-btn bg-amber-950/60 border-2 border-amber-600/40 rounded-xl text-amber-500 font-bold text-lg flex items-center justify-center">2</button>
-                            <button onclick="handleGamePadClick(2)" id="pad-2" class="simon-btn bg-emerald-950/60 border-2 border-emerald-600/40 rounded-xl text-emerald-500 font-bold text-lg flex items-center justify-center">3</button>
-                            <button onclick="handleGamePadClick(3)" id="pad-3" class="simon-btn bg-cyan-950/60 border-2 border-cyan-600/40 rounded-xl text-cyan-500 font-bold text-lg flex items-center justify-center">4</button>
-                            <button onclick="handleGamePadClick(4)" id="pad-4" class="simon-btn bg-indigo-950/60 border-2 border-indigo-600/40 rounded-xl text-indigo-500 font-bold text-lg flex items-center justify-center">5</button>
-                            <button onclick="handleGamePadClick(5)" id="pad-5" class="simon-btn bg-fuchsia-950/60 border-2 border-fuchsia-600/40 rounded-xl text-fuchsia-500 font-bold text-lg flex items-center justify-center">6</button>
-                            <button onclick="handleGamePadClick(6)" id="pad-6" class="simon-btn bg-teal-950/60 border-2 border-teal-600/40 rounded-xl text-teal-500 font-bold text-lg flex items-center justify-center">7</button>
-                            <button onclick="handleGamePadClick(7)" id="pad-7" class="simon-btn bg-violet-950/60 border-2 border-violet-600/40 rounded-xl text-violet-500 font-bold text-lg flex items-center justify-center">8</button>
-                            <button onclick="handleGamePadClick(8)" id="pad-8" class="simon-btn bg-sky-950/60 border-2 border-sky-600/40 rounded-xl text-sky-500 font-bold text-lg flex items-center justify-center">9</button>
+                        <div class="grid grid-cols-3 gap-2.5 w-full max-w-[260px] aspect-square p-2.5 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-2xl my-1">
+                            <button onclick="handleGamePadClick(0)" id="pad-0" class="simon-btn bg-rose-950/60 border-2 border-rose-600/40 rounded-xl text-rose-500 font-bold text-base flex items-center justify-center">1</button>
+                            <button onclick="handleGamePadClick(1)" id="pad-1" class="simon-btn bg-amber-950/60 border-2 border-amber-600/40 rounded-xl text-amber-500 font-bold text-base flex items-center justify-center">2</button>
+                            <button onclick="handleGamePadClick(2)" id="pad-2" class="simon-btn bg-emerald-950/60 border-2 border-emerald-600/40 rounded-xl text-emerald-500 font-bold text-base flex items-center justify-center">3</button>
+                            <button onclick="handleGamePadClick(3)" id="pad-3" class="simon-btn bg-cyan-950/60 border-2 border-cyan-600/40 rounded-xl text-cyan-500 font-bold text-base flex items-center justify-center">4</button>
+                            <button onclick="handleGamePadClick(4)" id="pad-4" class="simon-btn bg-indigo-950/60 border-2 border-indigo-600/40 rounded-xl text-indigo-500 font-bold text-base flex items-center justify-center">5</button>
+                            <button onclick="handleGamePadClick(5)" id="pad-5" class="simon-btn bg-fuchsia-950/60 border-2 border-fuchsia-600/40 rounded-xl text-fuchsia-500 font-bold text-base flex items-center justify-center">6</button>
+                            <button onclick="handleGamePadClick(6)" id="pad-6" class="simon-btn bg-teal-950/60 border-2 border-teal-600/40 rounded-xl text-teal-500 font-bold text-base flex items-center justify-center">7</button>
+                            <button onclick="handleGamePadClick(7)" id="pad-7" class="simon-btn bg-violet-950/60 border-2 border-violet-600/40 rounded-xl text-violet-500 font-bold text-base flex items-center justify-center">8</button>
+                            <button onclick="handleGamePadClick(8)" id="pad-8" class="simon-btn bg-sky-950/60 border-2 border-sky-600/40 rounded-xl text-sky-500 font-bold text-base flex items-center justify-center">9</button>
                         </div>
 
-                        <button onclick="startGameChallenge()" class="mt-4 py-2.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg transition-all">
+                        <button onclick="startGameChallenge('image')" class="mt-3 py-2.5 px-6 rounded-xl font-semibold text-xs sm:text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg transition-all active:scale-[0.98]">
                             Start Challenge
                         </button>
                     </div>
 
                     <!-- Decrypted Output Area -->
-                    <div class="glass-panel p-5 rounded-2xl flex-1 flex flex-col min-h-[280px]">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl flex-1 flex flex-col min-h-[220px]">
                         <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-800">
-                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                                 <i data-lucide="terminal" class="w-4 h-4 text-cyber-neonCyan"></i>
                                 <span>Decrypted Image Payload</span>
                             </h3>
                             <button onclick="copyToClipboard('img-decode-output')" class="text-xs text-cyber-neonCyan hover:underline flex items-center gap-1">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                <span>Copy Text</span>
+                                <span>Copy</span>
                             </button>
                         </div>
-                        <div id="img-decode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-emerald-400 overflow-y-auto whitespace-pre-wrap break-all min-h-[160px]">
+                        <div id="img-decode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-3 font-mono text-xs sm:text-sm text-emerald-400 overflow-y-auto whitespace-pre-wrap break-all min-h-[140px]">
                             <span class="text-slate-600 italic">Extracted secret payload will appear here...</span>
                         </div>
                     </div>
@@ -389,18 +418,18 @@
         </div>
 
         <!-- =================================================================== -->
-        <!-- SECTION 2: TEXT STEGANOGRAPHY & PURE CIPHER STUDIO -->
+        <!-- SECTION 2: TEXT STEGANOGRAPHY WORKSPACE -->
         <!-- =================================================================== -->
         <div id="workspace-text" class="flex flex-col gap-6 hidden">
             
-            <!-- Secondary Navigation: Encode vs Decode -->
+            <!-- Secondary Navigation -->
             <div class="flex justify-center">
-                <div class="flex p-1 bg-slate-900/80 rounded-xl border border-slate-800">
-                    <button id="txt-tab-encode" onclick="switchTextTab('encode')" class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-neonPink text-white shadow">
+                <div class="flex p-1 bg-slate-900/80 rounded-xl border border-slate-800 w-full sm:w-auto">
+                    <button id="txt-tab-encode" onclick="switchTextTab('encode')" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-cyber-neonPink text-white shadow">
                         <i data-lucide="file-key" class="w-4 h-4"></i>
                         <span>Text Encode & Hide</span>
                     </button>
-                    <button id="txt-tab-decode" onclick="switchTextTab('decode')" class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white">
+                    <button id="txt-tab-decode" onclick="switchTextTab('decode')" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white">
                         <i data-lucide="file-search" class="w-4 h-4"></i>
                         <span>Text Reveal & Decrypt</span>
                     </button>
@@ -410,8 +439,8 @@
             <!-- Text Encode Workspace -->
             <div id="txt-panel-encode" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-7 flex flex-col gap-6">
-                    <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
-                        <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl flex flex-col gap-4">
+                        <h2 class="text-sm sm:text-base font-semibold text-white flex items-center gap-2">
                             <i data-lucide="shield-alert" class="w-5 h-5 text-cyber-neonPink"></i>
                             <span>Text Payload & Cover Text</span>
                         </h2>
@@ -422,21 +451,21 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1">Cover Text (Optional for Zero-Width Mode)</label>
-                            <textarea id="txt-cover-input" rows="3" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-neonPink font-mono resize-none" placeholder="Normal cover text to disguise the hidden payload (e.g. 'Hey, meeting at 5pm today!')..."></textarea>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Cover Text (For Zero-Width Mode)</label>
+                            <textarea id="txt-cover-input" rows="3" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-neonPink font-mono resize-none" placeholder="Normal cover text (e.g., 'Hey, meeting at 5pm today!')..."></textarea>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-medium text-slate-300 mb-1">Steganography Technique</label>
-                                <select id="txt-stego-mode" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyber-neonPink">
-                                    <option value="ZERO_WIDTH">Zero-Width Invisible Characters (Invisibly appended to Cover Text)</option>
+                                <select id="txt-stego-mode" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-cyber-neonPink">
+                                    <option value="ZERO_WIDTH">Zero-Width Invisible Characters (Appended to Cover Text)</option>
                                     <option value="CIPHERTEXT_ONLY">Pure Ciphertext Armor (Base64 Output)</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-300 mb-1">Encryption Cipher</label>
-                                <select id="txt-cipher-type" onchange="toggleCipherKeyInput('txt-encode')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyber-neonPink">
+                                <select id="txt-cipher-type" onchange="toggleCipherKeyInput('txt-encode')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-cyber-neonPink">
                                     <option value="NONE">None / Plaintext</option>
                                     <option value="XOR">XOR Cipher</option>
                                     <option value="VIGENERE" selected>Vigenère Cipher</option>
@@ -448,24 +477,24 @@
                         <div id="txt-encode-key-wrapper">
                             <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase / Key</label>
                             <div class="relative">
-                                <input type="password" id="txt-encode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyber-neonPink font-mono" placeholder="Secret passphrase key">
-                                <button type="button" onclick="togglePasswordVisibility('txt-encode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                <input type="password" id="txt-encode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyber-neonPink font-mono" placeholder="Secret passphrase key">
+                                <button type="button" onclick="togglePasswordVisibility('txt-encode-key', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Game Lock Option -->
-                        <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl flex flex-col gap-3">
+                        <div class="p-3.5 bg-slate-900/70 border border-slate-800 rounded-xl flex flex-col gap-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple"></i>
+                                    <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple shrink-0"></i>
                                     <div>
-                                        <h3 class="text-sm font-semibold text-white">Require Memory Game Challenge</h3>
-                                        <p class="text-xs text-slate-400">Lock message behind Simon memory challenge rounds</p>
+                                        <h3 class="text-xs sm:text-sm font-semibold text-white">Require Memory Game Challenge</h3>
+                                        <p class="text-[11px] text-slate-400">Lock message behind Simon memory challenge rounds</p>
                                     </div>
                                 </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
+                                <label class="relative inline-flex items-center cursor-pointer shrink-0">
                                     <input type="checkbox" id="txt-game-lock-toggle" onchange="toggleGameLockOption('txt-encode')" class="sr-only peer">
                                     <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyber-neonPurple"></div>
                                 </label>
@@ -479,7 +508,7 @@
                             </div>
                         </div>
 
-                        <button onclick="processTextEncode()" class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:brightness-110 text-white shadow-lg shadow-pink-600/30 transition-all flex items-center justify-center gap-2">
+                        <button onclick="processTextEncode()" class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:brightness-110 text-white shadow-lg shadow-pink-600/30 transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
                             <i data-lucide="wand2" class="w-4 h-4"></i>
                             <span>Encode & Hide Text Payload</span>
                         </button>
@@ -488,23 +517,23 @@
 
                 <!-- Text Stego Result Output -->
                 <div class="lg:col-span-5 flex flex-col gap-6">
-                    <div class="glass-panel p-5 rounded-2xl flex-1 flex flex-col border-cyber-neonPink/30 glow-pink">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl flex-1 flex flex-col border-cyber-neonPink/30 glow-pink">
                         <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-800">
-                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                                 <i data-lucide="copy-check" class="w-4 h-4 text-cyber-neonPink"></i>
                                 <span>Stego Text Result</span>
                             </h3>
                             <button onclick="copyToClipboard('txt-encode-output')" class="text-xs text-cyber-neonPink hover:underline flex items-center gap-1">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                <span>Copy Text</span>
+                                <span>Copy</span>
                             </button>
                         </div>
-                        <div id="txt-encode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-pink-300 overflow-y-auto whitespace-pre-wrap break-all min-h-[220px]">
-                            <span class="text-slate-600 italic">Generated text payload (containing hidden zero-width Unicode characters or ciphertext) will appear here ready to copy/paste...</span>
+                        <div id="txt-encode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-3 font-mono text-xs sm:text-sm text-pink-300 overflow-y-auto whitespace-pre-wrap break-all min-h-[180px]">
+                            <span class="text-slate-600 italic">Generated text payload (containing hidden zero-width Unicode characters or ciphertext) will appear here...</span>
                         </div>
                         <div class="mt-3 text-[11px] text-slate-400 flex items-center gap-1.5">
                             <i data-lucide="info" class="w-3.5 h-3.5 text-cyber-neonPink shrink-0"></i>
-                            <span>You can copy/paste this exact text into Discord, WhatsApp, Email, or Slack!</span>
+                            <span>Copy/paste directly into iMessage, WhatsApp, Discord, or Email!</span>
                         </div>
                     </div>
                 </div>
@@ -513,18 +542,18 @@
             <!-- Text Decode Workspace -->
             <div id="txt-panel-decode" class="grid grid-cols-1 lg:grid-cols-12 gap-6 hidden">
                 <div class="lg:col-span-5 flex flex-col gap-6">
-                    <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4">
-                        <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl flex flex-col gap-4">
+                        <h2 class="text-sm sm:text-base font-semibold text-white flex items-center gap-2">
                             <i data-lucide="search" class="w-5 h-5 text-cyber-neonCyan"></i>
                             <span>Paste Stego Text</span>
                         </h2>
 
                         <div>
                             <label class="block text-xs font-medium text-slate-300 mb-1">Stego Text or Ciphertext</label>
-                            <textarea id="txt-decode-input" rows="5" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-neonCyan font-mono resize-none" placeholder="Paste the text containing zero-width hidden characters or armor ciphertext here..."></textarea>
+                            <textarea id="txt-decode-input" rows="4" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyber-neonCyan font-mono resize-none" placeholder="Paste text containing zero-width hidden characters or armor ciphertext here..."></textarea>
                         </div>
 
-                        <button onclick="inspectTextHeader()" class="py-2.5 px-4 rounded-xl font-semibold text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition-all">
+                        <button onclick="inspectTextHeader()" class="py-2.5 px-4 rounded-xl font-semibold text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
                             <i data-lucide="scan" class="w-4 h-4"></i>
                             <span>Scan Payload Header</span>
                         </button>
@@ -536,14 +565,14 @@
                         <div id="txt-decode-key-wrapper" class="hidden">
                             <label class="block text-xs font-medium text-slate-300 mb-1">Passphrase / Key</label>
                             <div class="relative">
-                                <input type="password" id="txt-decode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 pr-10 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyber-neonCyan" placeholder="Enter key">
-                                <button type="button" onclick="togglePasswordVisibility('txt-decode-key', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                <input type="password" id="txt-decode-key" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyber-neonCyan" placeholder="Enter key">
+                                <button type="button" onclick="togglePasswordVisibility('txt-decode-key', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <button id="btn-txt-decode-process" onclick="processTextDecode()" disabled class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button id="btn-txt-decode-process" onclick="processTextDecode()" disabled class="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]">
                             <i data-lucide="unlock" class="w-4 h-4"></i>
                             <span>Reveal Secret Payload</span>
                         </button>
@@ -552,59 +581,59 @@
 
                 <div class="lg:col-span-7 flex flex-col gap-6">
                     <!-- Text Game Lock Panel -->
-                    <div id="txt-game-panel" class="glass-panel p-6 rounded-2xl hidden flex-col items-center justify-center border-cyber-neonPurple/40 glow-purple">
-                        <div class="w-full flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                    <div id="txt-game-panel" class="glass-panel p-5 rounded-2xl hidden flex-col items-center justify-center border-cyber-neonPurple/40 glow-purple">
+                        <div class="w-full flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
                             <div class="flex items-center gap-2">
-                                <i data-lucide="gamepad-2" class="w-6 h-6 text-cyber-neonPurple"></i>
+                                <i data-lucide="gamepad-2" class="w-5 h-5 text-cyber-neonPurple"></i>
                                 <div>
-                                    <h3 class="font-bold text-base text-white">Text Game Lock Active!</h3>
-                                    <p class="text-xs text-slate-400">Complete pattern challenge to unlock message decryption</p>
+                                    <h3 class="font-bold text-sm text-white">Text Game Lock Active!</h3>
+                                    <p class="text-[11px] text-slate-400">Complete pattern challenge to unlock message</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-3">
                                 <div class="text-right">
-                                    <span class="text-xs text-slate-400 block">CURRENT</span>
-                                    <span id="txt-game-current" class="text-xl font-bold font-mono text-white">0</span>
+                                    <span class="text-[10px] text-slate-400 block">CURRENT</span>
+                                    <span id="txt-game-current" class="text-lg font-bold font-mono text-white">0</span>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xs text-slate-400 block font-semibold">REQUIRED</span>
-                                    <span id="txt-game-required" class="text-xl font-bold font-mono text-cyber-neonPurple">0</span>
+                                    <span class="text-[10px] text-slate-400 block font-semibold">REQUIRED</span>
+                                    <span id="txt-game-required" class="text-lg font-bold font-mono text-cyber-neonPurple">0</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="txt-game-status" class="text-sm font-bold text-cyber-neonPurple mb-4">PRESS START CHALLENGE</div>
+                        <div id="txt-game-status" class="text-xs font-bold text-cyber-neonPurple mb-3">TAP START CHALLENGE</div>
 
-                        <div class="grid grid-cols-3 gap-3 w-full max-w-[280px] aspect-square p-3 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-2xl my-2">
-                            <button onclick="handleGamePadClick(0)" id="tpad-0" class="simon-btn bg-rose-950/60 border-2 border-rose-600/40 rounded-xl text-rose-500 font-bold text-lg flex items-center justify-center">1</button>
-                            <button onclick="handleGamePadClick(1)" id="tpad-1" class="simon-btn bg-amber-950/60 border-2 border-amber-600/40 rounded-xl text-amber-500 font-bold text-lg flex items-center justify-center">2</button>
-                            <button onclick="handleGamePadClick(2)" id="tpad-2" class="simon-btn bg-emerald-950/60 border-2 border-emerald-600/40 rounded-xl text-emerald-500 font-bold text-lg flex items-center justify-center">3</button>
-                            <button onclick="handleGamePadClick(3)" id="tpad-3" class="simon-btn bg-cyan-950/60 border-2 border-cyan-600/40 rounded-xl text-cyan-500 font-bold text-lg flex items-center justify-center">4</button>
-                            <button onclick="handleGamePadClick(4)" id="tpad-4" class="simon-btn bg-indigo-950/60 border-2 border-indigo-600/40 rounded-xl text-indigo-500 font-bold text-lg flex items-center justify-center">5</button>
-                            <button onclick="handleGamePadClick(5)" id="tpad-5" class="simon-btn bg-fuchsia-950/60 border-2 border-fuchsia-600/40 rounded-xl text-fuchsia-500 font-bold text-lg flex items-center justify-center">6</button>
-                            <button onclick="handleGamePadClick(6)" id="tpad-6" class="simon-btn bg-teal-950/60 border-2 border-teal-600/40 rounded-xl text-teal-500 font-bold text-lg flex items-center justify-center">7</button>
-                            <button onclick="handleGamePadClick(7)" id="tpad-7" class="simon-btn bg-violet-950/60 border-2 border-violet-600/40 rounded-xl text-violet-500 font-bold text-lg flex items-center justify-center">8</button>
-                            <button onclick="handleGamePadClick(8)" id="tpad-8" class="simon-btn bg-sky-950/60 border-2 border-sky-600/40 rounded-xl text-sky-500 font-bold text-lg flex items-center justify-center">9</button>
+                        <div class="grid grid-cols-3 gap-2.5 w-full max-w-[260px] aspect-square p-2.5 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-2xl my-1">
+                            <button onclick="handleGamePadClick(0)" id="tpad-0" class="simon-btn bg-rose-950/60 border-2 border-rose-600/40 rounded-xl text-rose-500 font-bold text-base flex items-center justify-center">1</button>
+                            <button onclick="handleGamePadClick(1)" id="tpad-1" class="simon-btn bg-amber-950/60 border-2 border-amber-600/40 rounded-xl text-amber-500 font-bold text-base flex items-center justify-center">2</button>
+                            <button onclick="handleGamePadClick(2)" id="tpad-2" class="simon-btn bg-emerald-950/60 border-2 border-emerald-600/40 rounded-xl text-emerald-500 font-bold text-base flex items-center justify-center">3</button>
+                            <button onclick="handleGamePadClick(3)" id="tpad-3" class="simon-btn bg-cyan-950/60 border-2 border-cyan-600/40 rounded-xl text-cyan-500 font-bold text-base flex items-center justify-center">4</button>
+                            <button onclick="handleGamePadClick(4)" id="tpad-4" class="simon-btn bg-indigo-950/60 border-2 border-indigo-600/40 rounded-xl text-indigo-500 font-bold text-base flex items-center justify-center">5</button>
+                            <button onclick="handleGamePadClick(5)" id="tpad-5" class="simon-btn bg-fuchsia-950/60 border-2 border-fuchsia-600/40 rounded-xl text-fuchsia-500 font-bold text-base flex items-center justify-center">6</button>
+                            <button onclick="handleGamePadClick(6)" id="tpad-6" class="simon-btn bg-teal-950/60 border-2 border-teal-600/40 rounded-xl text-teal-500 font-bold text-base flex items-center justify-center">7</button>
+                            <button onclick="handleGamePadClick(7)" id="tpad-7" class="simon-btn bg-violet-950/60 border-2 border-violet-600/40 rounded-xl text-violet-500 font-bold text-base flex items-center justify-center">8</button>
+                            <button onclick="handleGamePadClick(8)" id="tpad-8" class="simon-btn bg-sky-950/60 border-2 border-sky-600/40 rounded-xl text-sky-500 font-bold text-base flex items-center justify-center">9</button>
                         </div>
 
-                        <button onclick="startGameChallenge('text')" class="mt-4 py-2.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg transition-all">
+                        <button onclick="startGameChallenge('text')" class="mt-3 py-2.5 px-6 rounded-xl font-semibold text-xs sm:text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg transition-all active:scale-[0.98]">
                             Start Challenge
                         </button>
                     </div>
 
                     <!-- Text Decrypted Output -->
-                    <div class="glass-panel p-5 rounded-2xl flex-1 flex flex-col min-h-[280px]">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl flex-1 flex flex-col min-h-[220px]">
                         <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-800">
-                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                            <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                                 <i data-lucide="terminal" class="w-4 h-4 text-cyber-neonCyan"></i>
                                 <span>Decrypted Text Output</span>
                             </h3>
                             <button onclick="copyToClipboard('txt-decode-output')" class="text-xs text-cyber-neonCyan hover:underline flex items-center gap-1">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                <span>Copy Text</span>
+                                <span>Copy</span>
                             </button>
                         </div>
-                        <div id="txt-decode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-emerald-400 overflow-y-auto whitespace-pre-wrap break-all min-h-[160px]">
+                        <div id="txt-decode-output" class="flex-1 bg-slate-950/90 border border-slate-800 rounded-xl p-3 font-mono text-xs sm:text-sm text-emerald-400 overflow-y-auto whitespace-pre-wrap break-all min-h-[140px]">
                             <span class="text-slate-600 italic">Revealed secret message will appear here...</span>
                         </div>
                     </div>
@@ -616,39 +645,54 @@
 
     <script>
         // =========================================================================
-        // GLOBAL APP STATE & AUDIO SYNTHESIZER
+        // GLOBAL APP STATE & iOS WEB AUDIO HANDLER
         // =========================================================================
-        let currentPrimaryMode = 'image'; // 'image' or 'text'
-        let currentImageTab = 'encode'; // 'encode' or 'decode'
-        let currentTextTab = 'encode';  // 'encode' or 'decode'
+        let currentPrimaryMode = 'image';
+        let currentImageTab = 'encode';
+        let currentTextTab = 'encode';
 
         let audioCtx = null;
 
-        function getAudioContext() {
+        // Specialized Web Audio initialization and unlock for iOS Safari
+        function initAndUnlockAudioContext() {
             if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
             }
-            if (audioCtx.state === 'suspended') {
+            if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            return audioCtx;
         }
+
+        // Attach listeners to unlock audio on first touch/tap on iOS Safari
+        ['touchstart', 'touchend', 'mousedown', 'keydown'].forEach(evt => {
+            window.addEventListener(evt, function unlockAudioOnInteraction() {
+                initAndUnlockAudioContext();
+                if (audioCtx && audioCtx.state === 'running') {
+                    window.removeEventListener(evt, unlockAudioOnInteraction);
+                }
+            }, { passive: true, once: false });
+        });
 
         function playSynthesizedSound(freq, type = 'sine', duration = 0.15) {
             try {
-                const ctx = getAudioContext();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
+                initAndUnlockAudioContext();
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
                 osc.type = type;
-                osc.frequency.setValueAtTime(freq, ctx.currentTime);
-                gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
                 osc.connect(gain);
-                gain.connect(ctx.destination);
+                gain.connect(audioCtx.destination);
                 osc.start();
-                osc.stop(ctx.currentTime + duration);
+                osc.stop(audioCtx.currentTime + duration);
             } catch (e) {
-                // Audio autoplay fallback
+                // Audio autoplay fallback for strict browser rules
             }
         }
 
@@ -713,7 +757,7 @@
         }
 
         // =========================================================================
-        // MODE & TAB SWITCHERS
+        // TAB & MODE SWITCHERS
         // =========================================================================
         function switchPrimaryMode(mode) {
             currentPrimaryMode = mode;
@@ -723,13 +767,13 @@
             const txtWs = document.getElementById('workspace-text');
 
             if (mode === 'image') {
-                imgBtn.className = "flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-cyber-600 text-white shadow";
-                txtBtn.className = "flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white transition-all duration-200";
+                imgBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-cyber-600 text-white shadow";
+                txtBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all duration-200";
                 imgWs.classList.remove('hidden');
                 txtWs.classList.add('hidden');
             } else {
-                txtBtn.className = "flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-cyber-neonPink text-white shadow";
-                imgBtn.className = "flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white transition-all duration-200";
+                txtBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-cyber-neonPink text-white shadow";
+                imgBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all duration-200";
                 txtWs.classList.remove('hidden');
                 imgWs.classList.add('hidden');
             }
@@ -743,13 +787,13 @@
             const decPanel = document.getElementById('img-panel-decode');
 
             if (tab === 'encode') {
-                encBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-600 text-white shadow";
-                decBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white";
+                encBtn.className = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-cyber-600 text-white shadow";
+                decBtn.className = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white";
                 encPanel.classList.remove('hidden');
                 decPanel.classList.add('hidden');
             } else {
-                decBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-600 text-white shadow";
-                encBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white";
+                decBtn.className = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-cyber-600 text-white shadow";
+                encBtn.className = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white";
                 decPanel.classList.remove('hidden');
                 encPanel.classList.add('hidden');
             }
@@ -763,13 +807,13 @@
             const decPanel = document.getElementById('txt-panel-decode');
 
             if (tab === 'encode') {
-                encBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-neonPink text-white shadow";
-                decBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white";
+                encBtn.className = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-cyber-neonPink text-white shadow";
+                decBtn.className = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white";
                 encPanel.classList.remove('hidden');
                 decPanel.classList.add('hidden');
             } else {
-                decBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-cyber-neonPink text-white shadow";
-                encBtn.className = "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white";
+                decBtn.className = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-cyber-neonPink text-white shadow";
+                encBtn.className = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-white";
                 decPanel.classList.remove('hidden');
                 encPanel.classList.add('hidden');
             }
@@ -928,11 +972,6 @@
         // =========================================================================
         // ZERO-WIDTH TEXT STEGANOGRAPHY ENGINE
         // =========================================================================
-        // Uses Unicode zero-width space characters:
-        // U+200B = Zero-Width Space ('0' bit)
-        // U+200C = Zero-Width Non-Joiner ('1' bit)
-        // U+200D = Zero-Width Joiner (Delimiter / Binary separator)
-
         const ZW_ZERO = '\u200B';
         const ZW_ONE = '\u200C';
         const ZW_DELIM = '\u200D';
@@ -946,7 +985,7 @@
                     zwString += (bit === 1) ? ZW_ONE : ZW_ZERO;
                 }
             }
-            return zwString + ZW_DELIM; // End marker
+            return zwString + ZW_DELIM;
         }
 
         function zeroWidthToBytes(zwString) {
@@ -966,9 +1005,6 @@
             }
             return bytes;
         }
-
-        // Header format for Text/Zero-Width Payload (Pre-binary):
-        // [3 bytes "STG"][1 byte Cipher Code][1 byte Game Level][4 bytes Payload Length UI32][Payload Bytes]
 
         const MAGIC_HEADER = [83, 84, 71]; // "STG"
 
@@ -1027,7 +1063,7 @@
 
             let bitIdx = 0;
             for (let i = 0; i < pixels.length; i++) {
-                if (i % 4 === 3) continue; // Skip Alpha channel
+                if (i % 4 === 3) continue; // Skip Alpha
 
                 if (bitIdx < totalBits) {
                     const byteIndex = Math.floor(bitIdx / 8);
@@ -1101,7 +1137,7 @@
         }
 
         // =========================================================================
-        // IMAGE STEGANOGRAPHY WORKFLOW & EVENTS
+        // IMAGE STEGANOGRAPHY WORKFLOW
         // =========================================================================
         let encodeLoadedImage = null;
         let decodeLoadedImage = null;
@@ -1112,13 +1148,6 @@
         const encodeFileInput = document.getElementById('encode-file-input');
 
         encodeDropzone.addEventListener('click', () => encodeFileInput.click());
-        encodeDropzone.addEventListener('dragover', (e) => { e.preventDefault(); encodeDropzone.classList.add('border-cyber-500'); });
-        encodeDropzone.addEventListener('dragleave', () => encodeDropzone.classList.remove('border-cyber-500'));
-        encodeDropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            encodeDropzone.classList.remove('border-cyber-500');
-            if (e.dataTransfer.files.length) handleEncodeFile(e.dataTransfer.files[0]);
-        });
 
         encodeFileInput.addEventListener('change', (e) => {
             if (e.target.files.length) handleEncodeFile(e.target.files[0]);
@@ -1139,7 +1168,7 @@
                     document.getElementById('encode-preview-placeholder').classList.add('hidden');
                     
                     document.getElementById('encode-resolution-badge').innerText = `${img.width} × ${img.height} px`;
-                    document.getElementById('encode-img-info').innerText = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                    document.getElementById('encode-img-info').innerText = `${file.name}`;
                     
                     updateCapacityCalculator();
                     document.getElementById('btn-encode-process').disabled = false;
@@ -1170,7 +1199,7 @@
 
             const percent = Math.min(100, Math.round((currentBytes / maxPayloadBytes) * 100));
             capacityBar.style.width = `${percent}%`;
-            capacityText.innerText = `${currentBytes} / ${maxPayloadBytes} bytes`;
+            capacityText.innerText = `${currentBytes} / ${maxPayloadBytes} B`;
         }
 
         async function processImageEncode() {
@@ -1210,10 +1239,12 @@
 
                 const fullBytes = packStegoBuffer(cipherType, requiredRounds, encryptedPayload);
 
+                // Precise 1:1 Canvas rendering without browser smoothing distortion
                 const canvas = document.createElement('canvas');
                 canvas.width = encodeLoadedImage.width;
                 canvas.height = encodeLoadedImage.height;
-                const ctx = canvas.getContext('2d');
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                ctx.imageSmoothingEnabled = false;
                 ctx.drawImage(encodeLoadedImage, 0, 0);
 
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -1240,18 +1271,11 @@
             }
         }
 
-        // Image Decode Dropzone
+        // Image Decode File Pickers
         const decodeDropzone = document.getElementById('decode-dropzone');
         const decodeFileInput = document.getElementById('decode-file-input');
 
         decodeDropzone.addEventListener('click', () => decodeFileInput.click());
-        decodeDropzone.addEventListener('dragover', (e) => { e.preventDefault(); decodeDropzone.classList.add('border-cyber-neonCyan'); });
-        decodeDropzone.addEventListener('dragleave', () => decodeDropzone.classList.remove('border-cyber-neonCyan'));
-        decodeDropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            decodeDropzone.classList.remove('border-cyber-neonCyan');
-            if (e.dataTransfer.files.length) handleDecodeFile(e.dataTransfer.files[0]);
-        });
 
         decodeFileInput.addEventListener('change', (e) => {
             if (e.target.files.length) handleDecodeFile(e.target.files[0]);
@@ -1276,7 +1300,7 @@
             const canvas = document.createElement('canvas');
             canvas.width = decodeLoadedImage.width;
             canvas.height = decodeLoadedImage.height;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
             ctx.drawImage(decodeLoadedImage, 0, 0);
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -1294,7 +1318,7 @@
                 statusHTML += `<div>Payload Size: <span class="text-white">${imgDetectedHeaderInfo.payloadLength} bytes</span></div>`;
 
                 if (imgDetectedHeaderInfo.requiredGameLevel > 0) {
-                    statusHTML += `<div class="text-amber-400 font-bold mt-1"><i data-lucide="gamepad-2" class="w-3.5 h-3.5 inline mr-1"></i> Required Game Lock: ${imgDetectedHeaderInfo.requiredGameLevel} Rounds</div>`;
+                    statusHTML += `<div class="text-amber-400 font-bold mt-1"><i data-lucide="gamepad-2" class="w-3.5 h-3.5 inline mr-1"></i> Game Lock: ${imgDetectedHeaderInfo.requiredGameLevel} Rounds</div>`;
                     gamePanel.classList.remove('hidden');
                     gamePanel.classList.add('flex');
                     document.getElementById('img-game-required').innerText = imgDetectedHeaderInfo.requiredGameLevel;
@@ -1339,7 +1363,7 @@
                 const canvas = document.createElement('canvas');
                 canvas.width = decodeLoadedImage.width;
                 canvas.height = decodeLoadedImage.height;
-                const ctx = canvas.getContext('2d');
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
                 ctx.drawImage(decodeLoadedImage, 0, 0);
 
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -1364,7 +1388,7 @@
         }
 
         // =========================================================================
-        // TEXT STEGANOGRAPHY WORKFLOW & LOGIC
+        // TEXT STEGANOGRAPHY WORKFLOW
         // =========================================================================
         async function processTextEncode() {
             const secretMsg = document.getElementById('txt-secret-input').value.trim();
@@ -1402,7 +1426,6 @@
                     const zwPayload = bytesToZeroWidth(fullBytes);
                     finalStegoText = coverText + zwPayload;
                 } else {
-                    // Ciphertext Armor Mode (Base64 wrapper with header tag)
                     const base64Str = btoa(String.fromCharCode(...fullBytes));
                     finalStegoText = `-----BEGIN STEGANOCRYPT VAULT-----\n${base64Str}\n-----END STEGANOCRYPT VAULT-----`;
                 }
@@ -1435,14 +1458,12 @@
                 let extractedBytes = null;
 
                 if (input.includes('-----BEGIN STEGANOCRYPT VAULT-----')) {
-                    // Base64 Armor Mode
                     const base64Match = input.match(/-----BEGIN STEGANOCRYPT VAULT-----\s*([A-Za-z0-9+/=\s]+)\s*-----END STEGANOCRYPT VAULT-----/);
                     if (!base64Match) throw new Error("Corrupted ciphertext armor");
                     const rawStr = atob(base64Match[1].replace(/\s/g, ''));
                     extractedBytes = new Uint8Array(rawStr.length);
                     for (let i = 0; i < rawStr.length; i++) extractedBytes[i] = rawStr.charCodeAt(i);
                 } else {
-                    // Zero-Width Mode Extraction
                     extractedBytes = zeroWidthToBytes(input);
                 }
 
@@ -1525,7 +1546,7 @@
         let gameCurrentLevel = 0;
         let isPlayingSequence = false;
         let isGameActive = false;
-        let activeGameTarget = 'image'; // 'image' or 'text'
+        let activeGameTarget = 'image';
 
         const padFrequencies = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33];
 
@@ -1539,6 +1560,7 @@
         }
 
         function startGameChallenge(targetMode = 'image') {
+            initAndUnlockAudioContext();
             activeGameTarget = targetMode;
             const targetHeader = targetMode === 'image' ? imgDetectedHeaderInfo : txtDetectedHeaderInfo;
             if (!targetHeader) return;
@@ -1581,6 +1603,7 @@
         }
 
         function handleGamePadClick(padIndex) {
+            initAndUnlockAudioContext();
             if (!isGameActive || isPlayingSequence) return;
 
             flashPad(padIndex, 200);
@@ -1589,12 +1612,11 @@
             const currentIndex = playerSequence.length - 1;
 
             if (playerSequence[currentIndex] !== gameSequence[currentIndex]) {
-                // Wrong tile pressed
                 playSynthesizedSound(120, 'sawtooth', 0.4);
                 const statusId = activeGameTarget === 'image' ? 'img-game-status' : 'txt-game-status';
-                document.getElementById(statusId).innerText = 'WRONG! CLICK START TO RETRY';
+                document.getElementById(statusId).innerText = 'WRONG! TAP START TO RETRY';
                 isGameActive = false;
-                showToast('Pattern failed! Click Start to retry.', 'error');
+                showToast('Pattern failed! Tap Start to retry.', 'error');
                 return;
             }
 
@@ -1631,7 +1653,6 @@
             showToast('Game challenge completed! Passphrase unlock enabled.', 'success');
         }
 
-        // Initialize icons and bindings on DOM load
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             toggleCipherKeyInput('encode');
